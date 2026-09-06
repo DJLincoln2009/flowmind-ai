@@ -15,7 +15,7 @@
 | # | Tâche | Statut | Date | Branche | Commit | Notes |
 |---|-------|--------|------|---------|--------|-------|
 | 1.1 | Rédaction du plan (PLAN.md + PLAN_SUIVI.md) | ✅ | 2026-09-06 | `develop` | — | Documents créés dans `docs/` |
-| 1.2 | Installation des skills premium (frontend-design, webapp-testing) | ✅ | 2026-09-06 | `develop` | — | Installés via degit depuis `anthropics/skills` |
+| 1.2 | Installation des skills premium (frontend-design, webapp-testing) | ✅ | 2026-09-06 | `main` | `a62f0f9` | Installés via degit depuis `anthropics/skills` |
 | 1.3 | Init monorepo (Turborepo + pnpm) | ⏳ | | | | |
 | 1.4 | Initialisation `apps/web` (Next.js 16 + shadcn/ui + Tailwind v4) | ⏳ | | | | |
 | 1.5 | Initialisation `apps/api` (FastAPI + SQLModel + SQLite + Alembic) | ⏳ | | | | |
