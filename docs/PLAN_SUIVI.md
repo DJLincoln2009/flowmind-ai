@@ -16,14 +16,15 @@
 |---|-------|--------|------|---------|--------|-------|
 | 1.1 | Rédaction du plan (PLAN.md + PLAN_SUIVI.md) | ✅ | 2026-09-06 | `develop` | — | Documents créés dans `docs/` |
 | 1.2 | Installation des skills premium (frontend-design, webapp-testing) | ✅ | 2026-09-06 | `main` | `a62f0f9` | Installés via degit depuis `anthropics/skills` |
-| 1.3 | Init monorepo (Turborepo + pnpm) | ⏳ | | | | |
-| 1.4 | Initialisation `apps/web` (Next.js 16 + shadcn/ui + Tailwind v4) | ⏳ | | | | |
-| 1.5 | Initialisation `apps/api` (FastAPI + SQLModel + SQLite + Alembic) | ⏳ | | | | |
-| 1.6 | Design system : tokens dark-first + Geist fonts | ⏳ | | | | |
-| 1.7 | Authentification (BetterAuth/Lucia — JWT + OAuth2) | ⏳ | | | | |
-| 1.8 | API CRUD workflows | ⏳ | | | | |
-| 1.9 | Docker Compose local | ⏳ | | | | |
-| 1.10 | Commit initial du socle | ⏳ | | | | |
+| 1.3 | Skills complémentaires antigravity (6 scolaires + 1 custom) | ✅ | 2026-09-06 | `main` | — | react-flow-node-ts, frontend-ui-dark-ts, tailwind-patterns, fastapi-templates, gemini-api-dev, api-security-best-practices + skill custom `flowmind-design-system` |
+| 1.4 | Init monorepo (Turborepo + pnpm) | ⏳ | | | | |
+| 1.5 | Initialisation `apps/web` (Next.js 16 + shadcn/ui + Tailwind v4) | ⏳ | | | | |
+| 1.6 | Initialisation `apps/api` (FastAPI + SQLModel + SQLite + Alembic) | ⏳ | | | | |
+| 1.7 | Design system : tokens dark-first + Geist fonts | ⏳ | | | | |
+| 1.8 | Authentification (BetterAuth/Lucia — JWT + OAuth2) | ⏳ | | | | |
+| 1.9 | API CRUD workflows | ⏳ | | | | |
+| 1.10 | Docker Compose local | ⏳ | | | | |
+| 1.11 | Commit initial du socle | ⏳ | | | | |
 
 ---
 
@@ -102,3 +103,4 @@
 |------|-----------|--------|
 | 2026-09-06 | Création des documents PLAN.md et PLAN_SUIVI.md | Demande utilisateur : plan + suivi dans `docs/` |
 | 2026-09-06 | Installation des skills premium `frontend-design` + `webapp-testing` | Résultat à la hauteur du benchmark premium ; skills du repo officiel `anthropics/skills` installés dans `.opencode/skills/` |
+| 2026-09-06 | Installation de 6 skills `antigravity-awesome-skills` + skill custom `flowmind-design-system` | Stack cible couverte : React Flow, dark UI, Tailwind v4, FastAPI, Gemini, sécu API ; skill custom = fusion des meilleurs non retenus + tokens FlowMind |
