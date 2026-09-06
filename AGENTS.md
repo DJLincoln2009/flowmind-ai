@@ -1,7 +1,7 @@
 # AGENTS.md — FlowMind AI
 
 ## État du repo
-- **Aucun code ni commit encore** : repo vierge, uniquement `docs/` (à la branche `master`, sans historique). Le travail d'implémentation n'a pas commencé.
+- **Fondations posées, code non commencé** : `docs/` (plan + suivi), config `opencode.json`, skills installés et commits git sur la branche `main`. Le travail d'implémentation (monorepo) n'a pas commencé.
 - **Sources de vérité** : `docs/PLAN.md` (architecture et stack prévues) et `docs/PLAN_SUIVI.md` (suivi des tâches). Toute implémentation doit être conforme au plan ; les documents originaux (`docs/FlowMind_AI.md`, `docs/FlowMind_AI_Rapport_Strategique.md`) sont les specs produit de référence et doivent être mis à jour si le produit évolue.
 
 ## Règles de travail (contraintes du projet, non négociables)
@@ -19,6 +19,11 @@
 
 ## Conventions Git
 - `main` toujours stable/déployable ; intégration sur `develop` ; branches `feature/<name>` fusionnées via PR auto-revue ; tags `v0.x` à chaque jalon.
+
+## Chargement des skills (discipline contexte)
+- **Ne jamais charger un skill par anticipation** : invoquer l'outil `skill` uniquement au moment précis où son contenu va être utilisé, jamais "au cas où" ou en début de session.
+- **Une fois la tâche du skill terminée, le décharger** : ne plus le citer ni le re-invoquer pour les tâches suivantes ; laisser `compaction.auto` (config `opencode.json`) purger le contenu injecté. Pour les longues sessions, préférer une session fraîche à l'accumulation de skills résiduels.
+- Ne pas charger plusieurs skills si un seul suffit ; en cas d'ambiguïté, privilégier le skill le plus spécifique.
 
 ## Points de vigilance (pièges planifiés)
 - **Ne pas commencer par créer du code hors sujet** : suivre l'ordre des semaines dans `docs/PLAN_SUIVI.md` (Semaine 1 = fondations du monorepo).

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "paths": [".opencode/skills"]
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "tail_turns": 10
+  },
+  "tool_output": { "max_lines": 300, "max_bytes": 16384 },
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git log*": "allow",
+      "git diff*": "allow",
+      "git add*": "allow",
+      "git commit*": "allow",
+      "git branch*": "allow",
+      "git checkout*": "allow",
+      "git stash*": "allow",
+      "pnpm*": "allow",
+      "npm*": "allow",
+      "npx*": "allow",
+      "uv*": "allow",
+      "ruff*": "allow",
+      "pytest*": "allow",
+      "python*": "allow"
+    }
+  }
+}
