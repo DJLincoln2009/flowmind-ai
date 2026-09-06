@@ -17,7 +17,7 @@
 | 1.1 | Rédaction du plan (PLAN.md + PLAN_SUIVI.md) | ✅ | 2026-09-06 | `develop` | — | Documents créés dans `docs/` |
 | 1.2 | Installation des skills premium (frontend-design, webapp-testing) | ✅ | 2026-09-06 | `main` | `a62f0f9` | Installés via degit depuis `anthropics/skills` |
 | 1.3 | Skills complémentaires antigravity (6 scolaires + 1 custom) | ✅ | 2026-09-06 | `main` | `5c2197f` | react-flow-node-ts, frontend-ui-dark-ts, tailwind-patterns, fastapi-templates, gemini-api-dev, api-security-best-practices + skill custom `flowmind-design-system` |
-| 1.4 | Config opencode projet (permission + compaction skills) | ✅ | 2026-09-06 | `main` | — | `opencode.json` créé ; discipline de chargement/déchargement des skills documentée dans AGENTS.md |
+| 1.4 | Config opencode projet (permission + compaction skills) | ✅ | 2026-09-06 | `main` | `b9a4749` | `opencode.json` créé ; discipline de chargement/déchargement des skills documentée dans AGENTS.md |
 | 1.5 | Init monorepo (Turborepo + pnpm) | ⏳ | | | | |
 | 1.6 | Initialisation `apps/web` (Next.js 16 + shadcn/ui + Tailwind v4) | ⏳ | | | | |
 | 1.7 | Initialisation `apps/api` (FastAPI + SQLModel + SQLite + Alembic) | ⏳ | | | | |
