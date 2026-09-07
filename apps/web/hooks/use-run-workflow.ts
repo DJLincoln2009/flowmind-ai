@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { toast } from "sonner";
 import { api } from "@/lib/api-client";
 import { useExecutionStore } from "@/stores/execution-store";
 
@@ -26,7 +27,9 @@ export function useRunWorkflow() {
         const { execution_id } = await api.runWorkflow(workflowId);
         const es = api.streamExecution(execution_id, {
           onStart: () => {
-            // rafraîchir les nœuds (tous en attente)
+            toast.info("Exécution lancée", {
+              description: "Suivi en direct sur le canvas.",
+            });
           },
           onNode: ({ node_id, status, output, error }) => {
             const mapped =
@@ -40,13 +43,22 @@ export function useRunWorkflow() {
           },
           onEnd: ({ status }) => {
             setStatus(status === "success" ? "success" : "error");
+            if (status === "success") {
+              toast.success("Workflow terminé avec succès");
+            } else {
+              toast.error("Workflow terminé en échec");
+            }
             stopStream();
           },
-          onError: () => stopStream(),
+          onError: () => {
+            toast.error("Erreur de connexion au flux d'exécution");
+            stopStream();
+          },
         });
         esRef.current = es;
       } catch (err) {
         reset();
+        toast.error("Impossible de lancer l'exécution");
         console.error("Échec du lancement de l'exécution", err);
       }
     },

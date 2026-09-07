@@ -63,12 +63,12 @@
 
 | # | Tâche | Statut | Date | Branche | Commit | Notes |
 |---|-------|--------|------|---------|--------|-------|
-| 4.1 | Dashboard KPI | ⏳ | | | | |
-| 4.2 | Historique des exécutions (TanStack Table) | ⏳ | | | | |
-| 4.3 | Activity feed temps réel | ⏳ | | | | |
-| 4.4 | Notifications (Sonner + email) | ⏳ | | | | |
-| 4.5 | Empty states, skeletons, error boundaries | ⏳ | | | | |
-| 4.6 | Dark/Light toggle + responsive | ⏳ | | | | |
+| 4.1 | Dashboard KPI | ✅ | 2026-09-07 | `feature/semaine4` | `9714343`, `84920b8` | `GET /api/stats` (workflows, exécutions, taux succès, durée moyenne, 6 récentes) + cartes KPI (skeleton, animation `appear`) |
+| 4.2 | Historique des exécutions (TanStack Table) | ✅ | 2026-09-07 | `feature/semaine4` | `9714343`, `84920b8` | `GET /api/executions` (limit 100) + page `/history` (TanStack Table v9, statut/début/durée, EmptyState, skeleton) |
+| 4.3 | Activity feed temps réel | ✅ | 2026-09-07 | `feature/semaine4` | `84920b8` | Récentes exécutions côté dashboard, polling `refetchInterval 4000 ms` |
+| 4.4 | Notifications (Sonner + email) | ✅ | 2026-09-07 | `feature/semaine4` | `9714343`, `84920b8` | Toasts Sonner (lancée/succès/échec/erreur SSE, suppression workflow) + `services/notifier.py` SMTP best-effort (no-op sans `FLOWMIND_SMTP_HOST`) |
+| 4.5 | Empty states, skeletons, error boundaries | ✅ | 2026-09-07 | `feature/semaine4` | `84920b8` | `components/shared/` : empty-state, skeleton, error-boundary (Toaster + ErrorBoundary layout) |
+| 4.6 | Dark/Light toggle + responsive | ✅ | 2026-09-07 | `feature/semaine4` | `84920b8` | `next-themes` (toggle CSS-pur, sans hydration mismatch) + sidebar repliée <768px. E2E Playwright 7/7 vert, 0 erreur console |
 
 ---
 

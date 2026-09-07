@@ -94,6 +94,33 @@ export const ExecutionSchema = z.object({
 
 export type Execution = z.infer<typeof ExecutionSchema>;
 
+// ---- Historique & statistiques ----
+
+export const ExecutionHistoryItemSchema = z.object({
+  id: z.number(),
+  workflow_id: z.number(),
+  workflow_name: z.string(),
+  status: ExecutionStatusSchema,
+  created_at: z.string(),
+  started_at: z.string().nullable().optional(),
+  finished_at: z.string().nullable().optional(),
+  duration_ms: z.number().nullable().optional(),
+});
+
+export type ExecutionHistoryItem = z.infer<typeof ExecutionHistoryItemSchema>;
+
+export const DashboardStatsSchema = z.object({
+  workflows_total: z.number(),
+  workflows_active: z.number(),
+  executions_total: z.number(),
+  executions_success: z.number(),
+  execution_success_rate: z.number(),
+  avg_duration_ms: z.number().nullable(),
+  recent_executions: z.array(ExecutionHistoryItemSchema),
+});
+
+export type DashboardStats = z.infer<typeof DashboardStatsSchema>;
+
 // ---- Auth ----
 
 export const AuthTokensSchema = z.object({

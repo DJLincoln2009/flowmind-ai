@@ -31,6 +31,14 @@ class Settings(BaseSettings):
     # Modèle primaire : gemini | openrouter | groq | mistral
     ai_primary: str = "gemini"
 
+    # Notifications email — SMTP fourni par l'utilisateur (budget $0)
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_ssl: bool = False
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
+
     model_config = SettingsConfigDict(env_file=".env", env_prefix="FLOWMIND_", extra="ignore")
 
 

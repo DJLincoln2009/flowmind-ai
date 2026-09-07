@@ -18,9 +18,10 @@ from typing import Any
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.models.models import Execution, Workflow
+from app.models.models import Execution, User, Workflow
 from app.services.dag import DAGNode, build_dag, topological_levels
 from app.services.nodes import execute_node
+from app.services.notifier import notify_execution_completed
 
 logger = logging.getLogger(__name__)
 
@@ -124,6 +125,26 @@ async def run_workflow(
             "node_states": execution.node_states,
         },
     }
+
+    # Notification email best-effort (fire-and-forget, non bloquante)
+    try:
+        user = await session.get(User, workflow.owner_id)
+        if user and user.email:
+            duration_ms = None
+            if execution.started_at and execution.finished_at:
+                duration_ms = int(
+                    (execution.finished_at - execution.started_at).total_seconds() * 1000
+                )
+            task = asyncio.create_task(
+                notify_execution_completed(
+                    user.email, workflow.name, execution.status, duration_ms
+                )
+            )
+            task.add_done_callback(
+                lambda t: t.exception() if not t.cancelled() else None
+            )
+    except Exception:
+        logger.warning("Notification de fin d'exécution échouée", exc_info=True)
 
 
 async def _run_node_safe(
