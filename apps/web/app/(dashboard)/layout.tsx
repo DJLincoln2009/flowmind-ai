@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Sidebar } from "@/components/shared/sidebar";
 import { CommandPalette } from "@/components/shared/command-palette";
-import { useState } from "react";
+import { api } from "@/lib/api-client";
 
 export default function DashboardLayout({
   children,
@@ -11,6 +12,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [queryClient] = useState(() => new QueryClient());
+
+  useEffect(() => {
+    api.loadTokens();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
