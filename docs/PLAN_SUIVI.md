@@ -18,14 +18,14 @@
 | 1.2 | Installation des skills premium (frontend-design, webapp-testing) | ✅ | 2026-09-06 | `main` | `a62f0f9` | Installés via degit depuis `anthropics/skills` |
 | 1.3 | Skills complémentaires antigravity (6 scolaires + 1 custom) | ✅ | 2026-09-06 | `main` | `5c2197f` | react-flow-node-ts, frontend-ui-dark-ts, tailwind-patterns, fastapi-templates, gemini-api-dev, api-security-best-practices + skill custom `flowmind-design-system` |
 | 1.4 | Config opencode projet (permission + compaction skills) | ✅ | 2026-09-06 | `main` | `b9a4749` | `opencode.json` créé ; discipline de chargement/déchargement des skills documentée dans AGENTS.md |
-| 1.5 | Init monorepo (Turborepo + pnpm) | ⏳ | | | | |
-| 1.6 | Initialisation `apps/web` (Next.js 16 + shadcn/ui + Tailwind v4) | ⏳ | | | | |
-| 1.7 | Initialisation `apps/api` (FastAPI + SQLModel + SQLite + Alembic) | ⏳ | | | | |
-| 1.8 | Design system : tokens dark-first + Geist fonts | ⏳ | | | | |
-| 1.9 | Authentification (BetterAuth/Lucia — JWT + OAuth2) | ⏳ | | | | |
-| 1.10 | API CRUD workflows | ⏳ | | | | |
-| 1.11 | Docker Compose local | ⏳ | | | | |
-| 1.12 | Commit initial du socle | ⏳ | | | | |
+| 1.5 | Init monorepo (Turborepo + pnpm) | ✅ | 2026-09-06 | `feature/semaine1` | — | Turborepo 2.10.12 + pnpm 11.15.1 + Next 16.3.4 ; install vérifiée et committée à la reprise |
+| 1.6 | Initialisation `apps/web` (Next.js 16 + shadcn/ui + Tailwind v4) | ✅ | 2026-09-06 | `feature/semaine1` | — | shadcn/ui v4 base-nova + Base UI (pas Radix) ; build + typecheck OK |
+| 1.7 | Initialisation `apps/api` (FastAPI + SQLModel + SQLite + Alembic) | ✅ | 2026-09-06 | `feature/semaine1` | — | FastAPI 0.141+ async, SQLModel, aiosqlite, Alembic (migration initiale appliquée), uv, Ruff, pytest |
+| 1.8 | Design system : tokens dark-first + Geist fonts | ✅ | 2026-09-06 | `feature/semaine1` | — | Tokens FlowMind dans globals.css (@theme) + bridge shadcn ; mode clair dérivé ; dark par défaut |
+| 1.9 | Authentification (JWT access + refresh, Argon2, OAuth2 Bearer) | ✅ | 2026-09-06 | `feature/semaine1` | — | `pwdlib[argon2]` (place de passlib — bug bcrypt), pyjwt ; register/login/refresh/me testés |
+| 1.10 | API CRUD workflows | ✅ | 2026-09-06 | `feature/semaine1` | — | CRUD complet + propriété (owner_id), validation Pydantic, 404/401 cohérents |
+| 1.11 | Docker Compose local | ✅ | 2026-09-06 | `feature/semaine1` | — | Dockerfiles api (uv) + web (standalone monorepo), compose avec volume SQLite ; `docker compose config` validé |
+| 1.12 | Commit initial du socle | ✅ | 2026-09-06 | `feature/semaine1` | — | README racine ajouté ; build web + tests API + ruff + typecheck shared validés ; branche prête à merger vers `develop` |
 
 ---
 

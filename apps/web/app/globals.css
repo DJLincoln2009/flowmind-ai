@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* --- Tokens nominatifs FlowMind (utilisables en classe : bg-surface-*, text-*, bg-accent ...) --- */
+  --color-surface-base: var(--surface-base);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-menu: var(--surface-menu);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-base: var(--border-base);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+
+  /* --- Bridge sémantique shadcn (base-nova) vers les valeurs FlowMind --- */
+  --color-background: var(--surface-base);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--surface-raised);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--surface-overlay);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--surface-raised);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--surface-raised);
+  --color-muted-foreground: var(--text-secondary);
+  --color-accent-foreground: #ffffff;
+  --color-destructive: var(--error);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border-base);
+  --color-input: var(--border-base);
+  --color-ring: var(--accent);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
+
+  --sidebar: var(--surface-raised);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--accent);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--surface-overlay);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border-base);
+  --sidebar-ring: var(--accent);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+/* ============ Couleurs (dark-first) ============ */
+:root,
+.dark {
+  /* Élévation par luminance croissante */
+  --surface-base: #0e0e12;
+  --surface-raised: #18181f;
+  --surface-overlay: #222229;
+  --surface-menu: #2a2a33;
+
+  --text-primary: #ededef;
+  --text-secondary: #8b8b93;
+  --text-muted: #6a6a72;
+
+  --border-base: #2e2e36;
+
+  --accent: #6c5ce7;
+  --accent-hover: #7c6ef7;
+
+  --success: #34d399;
+  --error: #f87171;
+  --warning: #fbbf24;
+  --info: #60a5fa;
+}
+
+/* Mode clair : dérivé par inversion contrôlée de la luminance */
+:root:not(.dark) {
+  --surface-base: #f9f9fb;
+  --surface-raised: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-menu: #ffffff;
+
+  --text-primary: #1a1a1e;
+  --text-secondary: #5c5c66;
+  --text-muted: #8b8b93;
+
+  --border-base: #e6e6ea;
+
+  --accent: #5b4cdb;
+  --accent-hover: #4b3fc2;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
