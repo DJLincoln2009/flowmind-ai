@@ -19,6 +19,11 @@ SessionLocal = async_sessionmaker(
 )
 
 
+def get_session_factory() -> async_sessionmaker[AsyncSession]:
+    """Renvoie le factory de sessions (pour ouvrir une session fraîche dans un générateur SSE)."""
+    return SessionLocal
+
+
 async def get_session() -> AsyncGenerator[AsyncSession]:
     async with SessionLocal() as session:
         yield session

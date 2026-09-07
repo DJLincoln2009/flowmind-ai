@@ -21,6 +21,16 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
     ]
 
+    # IA — chaîne de fallback structurée
+    gemini_api_key: str = ""
+    openrouter_api_key: str = ""
+    groq_api_key: str = ""
+    mistral_api_key: str = ""
+    ocrspace_api_key: str = ""
+
+    # Modèle primaire : gemini | openrouter | groq | mistral
+    ai_primary: str = "gemini"
+
     model_config = SettingsConfigDict(env_file=".env", env_prefix="FLOWMIND_", extra="ignore")
 
 
