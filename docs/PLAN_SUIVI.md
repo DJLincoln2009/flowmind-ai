@@ -46,15 +46,16 @@
 
 | # | Tâche | Statut | Date | Branche | Commit | Notes |
 |---|-------|--------|------|---------|--------|-------|
-| 3.1 | DAG Engine (topological sort + levels) | ⏳ | | | | |
-| 3.2 | SSE streaming temps réel | ⏳ | | | | |
-| 3.3 | Intégration IA structurée (Gemini → Groq → Mistral) | ⏳ | | | | |
-| 3.4 | Bloc IA Résumé | ⏳ | | | | |
-| 3.5 | Bloc IA Extraction de tâches | ⏳ | | | | |
-| 3.6 | Bloc IA Classification | ⏳ | | | | |
-| 3.7 | Bloc OCR (OCR.space + Tesseract fallback) | ⏳ | | | | |
-| 3.8 | Transcription vocale (Groq Whisper) | ⏳ | | | | |
-| 3.9 | State machine des exécutions | ⏳ | | | | |
+| 3.1 | DAG Engine (topological sort + levels) | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | `services/dag.py` — tri topologique de Kahn + niveaux parallèles ; détection de cycles testée |
+| 3.2 | SSE streaming temps réel | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | `sse-starlette` ; événements `start/node/end/error` depuis le moteur (`SSEEvent`), sérialisation JSON manuelle ; token via Bearer ou query param |
+| 3.3 | Intégration IA structurée (Gemini → Groq → Mistral) | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | `services/ai_client.py` — chaîne fallback Gemini 3.6-flash → OpenRouter (Nemotron free) → Groq (qwen3.6) → Mistral small (429 fallback) ; un seul point de bascule `AI_PRIMARY` |
+| 3.4 | Bloc IA Résumé | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | Handler `ai_summary` (Gemini, testé end-to-end via SSE) |
+| 3.5 | Bloc IA Extraction de tâches | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | Handler `ai_extract` (sortie JSON structurée) |
+| 3.6 | Bloc IA Classification | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | Handler `ai_classify` |
+| 3.7 | Bloc OCR (OCR.space + Tesseract fallback) | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | Handler `ocr` — OCR.space primaire, Tesseract fallback local ; besoins d'image (URL) |
+| 3.8 | Transcription vocale (Groq Whisper) | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965` | Handler `transcription` — Groq Whisper, fallback faster-whisper CPU |
+| 3.9 | State machine des exécutions | ✅ | 2026-09-07 | `feature/semaine3` | `bd7a965`, `3b6d643` | `services/executor.py` + `execution-store.ts` (idle/pending/running/success/error) ; nœuds : en attente/running/succès/échec en temps réel |
+| 3.10 | Connecteur exécution API SSE → canvas | ✅ | 2026-09-07 | `feature/semaine3` | `3b6d643` | Bouton Exécuter/Arrêter dans le builder, hook `use-run-workflow`, stream branche sur le store (statuts par nœud). E2E Playwright vert (3 nœuds → Succès, 0 erreur console) |
 
 ---
 
@@ -105,3 +106,6 @@
 | 2026-09-06 | Création des documents PLAN.md et PLAN_SUIVI.md | Demande utilisateur : plan + suivi dans `docs/` |
 | 2026-09-06 | Installation des skills premium `frontend-design` + `webapp-testing` | Résultat à la hauteur du benchmark premium ; skills du repo officiel `anthropics/skills` installés dans `.opencode/skills/` |
 | 2026-09-06 | Installation de 6 skills `antigravity-awesome-skills` + skill custom `flowmind-design-system` | Stack cible couverte : React Flow, dark UI, Tailwind v4, FastAPI, Gemini, sécu API ; skill custom = fusion des meilleurs non retenus + tokens FlowMind |
+| 2026-09-07 | Correction des noms de modèles IA | Les modèles prévus (Gemini 2.5-flash, groq llama-3.3, openrouter gemini-2.5:free) sont indisponibles/non gratuits pour les nouveaux comptes → diagnostic live et remplacement : Gemini `gemini-3.6-flash`, OpenRouter `nvidia/nemotron-3-ultra-550b-a55b:free`, Groq `qwen/qwen3.6-27b`, Mistral `mistral-small-latest` (4e fallback, rate limit 429) |
+| 2026-09-07 | SSE authorisé via token en query param | EventSource ne peut pas envoyer de header Authorization → double support Bearer + `?token=` sur `/api/executions/{id}/stream` (compromis assumé, local-first) |
+| 2026-09-07 | `playwright` ajouté en dependency dev de l'API | Les E2E UI Playwright sont exécutés via le venv uv ; `uv sync` l'avait retiré car hors `pyproject.toml` |

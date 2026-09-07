@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import init_db
 from app.routes import auth, workflows
+from app.routes.executions import router as executions_router
+from app.routes.executions import sse_router
 
 
 @asynccontextmanager
@@ -32,6 +34,8 @@ API_PREFIX = "/api"
 
 app.include_router(auth.router, prefix=API_PREFIX)
 app.include_router(workflows.router, prefix=API_PREFIX)
+app.include_router(executions_router, prefix=API_PREFIX)
+app.include_router(sse_router, prefix=API_PREFIX)
 
 
 @app.get("/health", tags=["health"])

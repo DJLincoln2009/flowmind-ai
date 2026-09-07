@@ -1,18 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import { Check, Cloud, Save, Workflow } from "lucide-react";
+import { Check, Cloud, Play, Save, Workflow } from "lucide-react";
 import { WorkflowCanvas } from "./workflow-canvas";
 import { NodePalette } from "./node-palette";
 import {
   useAutosave,
   useWorkflowPersistence,
 } from "@/hooks/use-workflow";
+import { useRunWorkflow } from "@/hooks/use-run-workflow";
+import { useExecutionStore } from "@/stores/execution-store";
 import { useUiStore } from "@/stores/ui-store";
 
 export function WorkflowBuilder({ workflowId }: { workflowId: number }) {
   const { dirty, name, save, load } = useWorkflowPersistence();
   const setCommandOpen = useUiStore((s) => s.setCommandOpen);
+  const execStatus = useExecutionStore((s) => s.status);
+  const { execute, stopStream } = useRunWorkflow();
 
   useEffect(() => {
     void load(workflowId);
@@ -22,6 +26,16 @@ export function WorkflowBuilder({ workflowId }: { workflowId: number }) {
 
   // Autosave uniquement quand un workflow est chargé (id != null).
   useAutosave();
+
+  const running = execStatus === "running";
+  const execLabel =
+    execStatus === "running"
+      ? "En cours…"
+      : execStatus === "success"
+        ? "Succès"
+        : execStatus === "error"
+          ? "Erreur"
+          : null;
 
   return (
     <div className="flex h-full flex-col">
@@ -48,6 +62,20 @@ export function WorkflowBuilder({ workflowId }: { workflowId: number }) {
             )}
           </p>
         </div>
+
+        {execLabel && (
+          <span
+            className={[
+              "rounded-md px-2 py-1 text-[11px] font-medium",
+              execStatus === "success" && "bg-success/15 text-success",
+              execStatus === "error" && "bg-error/15 text-error",
+              running && "bg-accent/15 text-accent-hover animate-pulse",
+            ].join(" ")}
+          >
+            {execLabel}
+          </span>
+        )}
+
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
@@ -59,6 +87,24 @@ export function WorkflowBuilder({ workflowId }: { workflowId: number }) {
             Ctrl K
           </kbd>
         </button>
+        {running ? (
+          <button
+            type="button"
+            onClick={stopStream}
+            className="inline-flex items-center gap-2 rounded-lg border border-error/40 bg-error/10 px-3 py-1.5 text-[12.5px] font-medium text-error transition-colors hover:bg-error/20"
+          >
+            Arrêter
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void execute(workflowId)}
+            className="inline-flex items-center gap-2 rounded-lg bg-success px-3 py-1.5 text-[12.5px] font-medium text-white transition-colors hover:opacity-90"
+          >
+            <Play size={14} />
+            Exécuter
+          </button>
+        )}
         <button
           type="button"
           onClick={() => void save()}
