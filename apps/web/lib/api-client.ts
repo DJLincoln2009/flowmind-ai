@@ -43,6 +43,8 @@ class ApiClient {
   }
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
+    if (!this.accessToken && !this.refreshToken) this.loadTokens();
+
     const headers = new Headers(init?.headers);
     headers.set("Content-Type", "application/json");
     if (this.accessToken) headers.set("Authorization", `Bearer ${this.accessToken}`);
