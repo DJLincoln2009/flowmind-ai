@@ -25,7 +25,7 @@
 | 1.9 | Authentification (JWT access + refresh, Argon2, OAuth2 Bearer) | ✅ | 2026-09-06 | `feature/semaine1` | — | `pwdlib[argon2]` (place de passlib — bug bcrypt), pyjwt ; register/login/refresh/me testés |
 | 1.10 | API CRUD workflows | ✅ | 2026-09-06 | `feature/semaine1` | — | CRUD complet + propriété (owner_id), validation Pydantic, 404/401 cohérents |
 | 1.11 | Docker Compose local | ✅ | 2026-09-06 | `feature/semaine1` | — | Dockerfiles api (uv) + web (standalone monorepo), compose avec volume SQLite ; `docker compose config` validé |
-| 1.12 | Commit initial du socle | ⏳ | | | | |
+| 1.12 | Commit initial du socle | ✅ | 2026-09-06 | `feature/semaine1` | — | README racine ajouté ; build web + tests API + ruff + typecheck shared validés ; branche prête à merger vers `develop` |
 
 ---
 
