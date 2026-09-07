@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: ./apps/api
+    container_name: flowmind-api
+    environment:
+      FLOWMIND_DATABASE_URL: sqlite+aiosqlite:////data/flowmind.db
+      FLOWMIND_JWT_SECRET: ${FLOWMIND_JWT_SECRET:-dev-secret-a-remplacer-en-production-32-bytes-min}
+    volumes:
+      - api-data:/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: flowmind-web
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  api-data:

@@ -1,0 +1,13 @@
+.git
+.gitignore
+node_modules
+apps/*/.next
+apps/*/node_modules
+apps/api/.venv
+apps/api/__pycache__
+packages/*/node_modules
+docs
+.opencode
+*.md
+.env*
+*.db
