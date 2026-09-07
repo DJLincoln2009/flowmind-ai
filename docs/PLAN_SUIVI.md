@@ -33,12 +33,12 @@
 
 | # | Tâche | Statut | Date | Branche | Commit | Notes |
 |---|-------|--------|------|---------|--------|-------|
-| 2.1 | Canvas React Flow v12 + custom nodes | ⏳ | | | | |
-| 2.2 | Node palette drag-and-drop | ⏳ | | | | |
-| 2.3 | Save/load workflows (JSON → API → SQLite) | ⏳ | | | | |
-| 2.4 | Zustand stores (4 domaines) | ⏳ | | | | |
-| 2.5 | Command Palette (Cmd+K) | ⏳ | | | | |
-| 2.6 | Sidebar navigation premium | ⏳ | | | | |
+| 2.1 | Canvas React Flow v12 + custom nodes | ✅ | 2026-09-07 | `feature/semaine2` | — | Canvas + custom node unique thématisé (handles, badges statut d'exécution), MiniMap, Controls, Dots background |
+| 2.2 | Node palette drag-and-drop | ✅ | 2026-09-07 | `feature/semaine2` | — | 10 types de nœuds, drag natif HTML5 (dataTransfer), drop → position via screenToFlowPosition |
+| 2.3 | Save/load workflows (JSON → API → SQLite) | ✅ | 2026-09-07 | `feature/semaine2` | — | Hook persistence (hydratation GET + save POST/PATCH), autosave différé 1.5 s, sérialisation Zod partagée ; pages liste/nouvel éditeur reliées |
+| 2.4 | Zustand stores (4 domaines) | ✅ | 2026-09-07 | `feature/semaine2` | — | workflow (graphe + dirty + serialize), execution (nodeStates SSE-ready), ui (palette commande, sidebar, inspect), settings (thème persisté) |
+| 2.5 | Command Palette (Cmd+K) | ✅ | 2026-09-07 | `feature/semaine2` | — | Modale custom (backdrop blur, autoFocus, Escape/Cmd+K), accessible dans tout le dashboard |
+| 2.6 | Sidebar navigation premium | ✅ | 2026-09-07 | `feature/semaine2` | — | Sidebar collapse/expand, nav active state, layout dashboard (route groups), QueryClientProvider, page liste workflows TanStack Query |
 
 ---
 
