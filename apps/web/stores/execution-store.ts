@@ -11,6 +11,7 @@ interface ExecutionState {
 
   run: () => void;
   nodeUpdated: (nodeId: string, status: ExecutionStatus) => void;
+  setStatus: (status: WorkingState) => void;
   reset: () => void;
 }
 
@@ -23,8 +24,8 @@ export const useExecutionStore = create<ExecutionState>()((set) => ({
   run: () => set({ status: "running", nodeStates: {}, error: null }),
   nodeUpdated: (nodeId, status) =>
     set((s) => ({
-      status,
       nodeStates: { ...s.nodeStates, [nodeId]: status },
     })),
+  setStatus: (status) => set({ status }),
   reset: () => set({ status: "idle", nodeStates: {}, error: null, lastRunAt: Date.now() }),
 }));

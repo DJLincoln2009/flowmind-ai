@@ -130,6 +130,49 @@ class ApiClient {
   deleteWorkflow(id: number): Promise<void> {
     return this.request<void>(`/workflows/${id}`, { method: "DELETE" });
   }
+
+  // ---- Exécutions ----
+
+  runWorkflow(id: number): Promise<{ execution_id: number }> {
+    return this.request<{ execution_id: number }>(`/workflows/${id}/run`, {
+      method: "POST",
+    });
+  }
+
+  listExecutions(id: number) {
+    return this.request<unknown[]>(`/workflows/${id}/executions`);
+  }
+
+  /**
+   * Flux SSE des événements d'exécution. Optionnel pour nettoyage à la fermeture.
+   * Les tokens sont injectés dans l'URL (EventSource ne permet pas d'headers).
+   */
+  streamExecution(
+    executionId: number,
+    handlers: {
+      onNode?: (data: {
+        node_id: string;
+        node_type: string;
+        status: string;
+        output: unknown;
+        error?: string | null;
+      }) => void;
+      onStart?: (data: { execution_id: number; levels: number }) => void;
+      onEnd?: (data: { execution_id: number; status: string }) => void;
+      onError?: (data: { message: string }) => void;
+    }
+  ): EventSource {
+    const token = this.loadTokens()?.access_token ?? "";
+    const es = new EventSource(
+      `${API_URL}/executions/${executionId}/stream?token=${encodeURIComponent(token)}`
+    );
+
+    es.addEventListener("start", (e) => handlers.onStart?.(JSON.parse((e as MessageEvent).data)));
+    es.addEventListener("node", (e) => handlers.onNode?.(JSON.parse((e as MessageEvent).data)));
+    es.addEventListener("end", (e) => handlers.onEnd?.(JSON.parse((e as MessageEvent).data)));
+    es.addEventListener("error", () => handlers.onError?.({ message: "Erreur SSE" }));
+    return es;
+  }
 }
 
 export const api = new ApiClient();
