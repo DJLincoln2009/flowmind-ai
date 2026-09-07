@@ -2,13 +2,14 @@
 
 import json
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 
 from app.core.database import get_session, get_session_factory
 from app.core.deps import get_current_user
+from app.core.security import decode_token
 from app.models.models import Execution, User, Workflow
 from app.services.executor import run_workflow
 
@@ -75,16 +76,46 @@ async def list_executions(
 sse_router = APIRouter(prefix="/executions", tags=["executions"])
 
 
+async def _resolve_user_from_token(
+    token: str | None, session: AsyncSession
+) -> "User | None":
+    """Résout un user depuis un token (Bearer ou query)."""
+    if not token:
+        return None
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "access":
+        return None
+    user_id = payload.get("sub")
+    if user_id is None:
+        return None
+    result = await session.execute(select(User).where(User.id == int(user_id)))
+    return result.scalar_one_or_none()
+
+
 @sse_router.get("/{execution_id}/stream")
 async def stream_execution(
     execution_id: int,
-    user: User = Depends(get_current_user),
+    request: Request,
+    token: str | None = None,
 ):
-    """Stream SSE des événements d'exécution d'un workflow."""
+    """Stream SSE des événements d'exécution d'un workflow.
+
+    Le token peut venir du header Authorization (Bearer) ou du query param `token`
+    (EventSource ne permet pas d'envoyer des headers personnalisés).
+    """
+    auth = request.headers.get("authorization", "")
+    bearer = auth[7:] if auth.lower().startswith("bearer ") else None
+    resolved_token = bearer or token
+
     session_factory = get_session_factory()
 
     async def generate():
         async with session_factory() as session:
+            user = await _resolve_user_from_token(resolved_token, session)
+            if not user:
+                yield {"event": "error", "data": json.dumps({"message": "Non authentifié"})}
+                return
+
             result = await session.execute(select(Execution).where(Execution.id == execution_id))
             execution = result.scalar_one_or_none()
             if not execution:
