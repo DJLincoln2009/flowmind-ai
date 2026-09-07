@@ -68,7 +68,7 @@ export const WorkflowCreateSchema = WorkflowSchema.omit({
   updated_at: true,
 });
 
-export type WorkflowCreate = z.infer<typeof WorkflowCreateSchema>;
+export type WorkflowCreate = z.input<typeof WorkflowCreateSchema>;
 
 // ---- Exécutions ----
 
