@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { api } from "@/lib/api-client";
 
 export default function WorkflowsPage() {
@@ -15,7 +16,12 @@ export default function WorkflowsPage() {
 
   const removeMutation = useMutation({
     mutationFn: (id: number) => api.deleteWorkflow(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["workflows"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workflows"] });
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+      toast.success("Workflow supprimé");
+    },
+    onError: () => toast.error("Impossible de supprimer le workflow"),
   });
 
   return (

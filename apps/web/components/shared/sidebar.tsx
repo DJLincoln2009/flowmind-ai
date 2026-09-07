@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useUiStore } from "@/stores/ui-store";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 const NAV_ITEMS = [
   {
@@ -111,7 +112,8 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className={["flex px-2.5 pb-3", collapsed && "px-2"].join(" ")}>
+      <div className={["flex flex-col gap-1.5 px-2.5 pb-3", collapsed && "px-2"].join(" ")}>
+        <ThemeToggle collapsed={collapsed} />
         <button
           onClick={toggleSidebar}
           title={collapsed ? "Étendre la barre latérale" : "Réduire la barre latérale"}

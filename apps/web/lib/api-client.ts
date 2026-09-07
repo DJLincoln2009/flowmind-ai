@@ -1,4 +1,10 @@
-import type { AuthTokens, Workflow, WorkflowCreate } from "@flowmind/shared";
+import type {
+  AuthTokens,
+  DashboardStats,
+  ExecutionHistoryItem,
+  Workflow,
+  WorkflowCreate,
+} from "@flowmind/shared";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
@@ -141,6 +147,14 @@ class ApiClient {
 
   listExecutions(id: number) {
     return this.request<unknown[]>(`/workflows/${id}/executions`);
+  }
+
+  listAllExecutions(): Promise<ExecutionHistoryItem[]> {
+    return this.request<ExecutionHistoryItem[]>("/executions");
+  }
+
+  getStats(): Promise<DashboardStats> {
+    return this.request<DashboardStats>("/stats");
   }
 
   /**

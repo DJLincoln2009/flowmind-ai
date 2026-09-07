@@ -7,6 +7,7 @@ interface UiState {
 
   setCommandOpen: (open: boolean) => void;
   toggleSidebar: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
   setInspectNode: (id: string | null) => void;
 }
 
@@ -17,5 +18,6 @@ export const useUiStore = create<UiState>()((set) => ({
 
   setCommandOpen: (commandOpen) => set({ commandOpen }),
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+  setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
   setInspectNode: (inspectNodeId) => set({ inspectNodeId }),
 }));
