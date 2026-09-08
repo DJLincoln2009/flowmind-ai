@@ -1,0 +1,27 @@
+name: Deploy production
+
+on:
+  push:
+    branches: [main]
+
+# Déploiements déclenchés via "deploy hooks" (POST) — aucun token expose.
+#   - Vercel (web)   : secret VERCEL_DEPLOY_HOOK  (lien "Deploy Hooks" du projet)
+#   - Railway (api)  : secret RAILWAY_DEPLOY_HOOK (onglet Deployments `New deploy hook`)
+# Créer ces secrets GitHub (Settings > Secrets) pour activer l'automatisation.
+
+jobs:
+  vercel:
+    name: Deploy web → Vercel
+    runs-on: ubuntu-latest
+    if: ${{ secrets.VERCEL_DEPLOY_HOOK != '' }}
+    steps:
+      - name: Trigger deploy hook
+        run: curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+
+  railway:
+    name: Deploy api → Railway
+    runs-on: ubuntu-latest
+    if: ${{ secrets.RAILWAY_DEPLOY_HOOK != '' }}
+    steps:
+      - name: Trigger deploy hook
+        run: curl -fsS -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK }}"
