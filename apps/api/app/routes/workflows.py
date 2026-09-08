@@ -6,6 +6,7 @@ from app.core.database import get_session
 from app.core.deps import get_current_user
 from app.models.models import User, Workflow
 from app.schemas.workflow import WorkflowCreate, WorkflowOut, WorkflowUpdate
+from app.services.scheduler import is_valid_cron, next_run
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
@@ -53,6 +54,19 @@ async def update_workflow(
 ) -> Workflow:
     workflow = await _get_owned(workflow_id, user.id, session)
     data = payload.model_dump(exclude_unset=True)
+
+    # Planification : valide l'expression cron et recalcule la prochaine exécution
+    if "cron" in data:
+        cron = data["cron"]
+        if cron is None or cron.strip() == "":
+            data["cron"] = None
+            data["next_run_at"] = None
+        elif not is_valid_cron(cron):
+            raise HTTPException(status_code=400, detail="Expression cron invalide")
+        else:
+            data["cron"] = cron.strip()
+            data["next_run_at"] = next_run(cron.strip())
+
     for key, value in data.items():
         setattr(workflow, key, value)
     await session.commit()

@@ -23,7 +23,7 @@ Le plan reprend `docs/FlowMind_AI.md` et `docs/FlowMind_AI_Rapport_Strategique.m
 |---|---|
 | Celery + Redis pour l'async | Moteur DAG asynchrone natif FastAPI (`asyncio` + `BackgroundTasks`), graduation possible vers BullMQ/Celery |
 | PostgreSQL requis | **SQLite local-first** (zero config), swap vers PostgreSQL par simple changement d'URL `DATABASE_URL` |
-| Déploiement Render/Railway | **Fly.io** (free tier sans mise en veille) en production, **Docker Compose** en local |
+| Déploiement Render/Fly.io | **Railway.app** (crédit initial ~$5, sans carte au premier déploiement) en production, **Docker Compose** en local |
 | Auth JWT simple | **BetterAuth / Lucia Auth** — JWT + OAuth2 (GitHub/Google), refresh tokens |
 | IA "Gemini / OpenRouter" vague | **Chaîne de fallback structurée** : Gemini 2.5 Flash → Groq (Llama 3.3) → Mistral Nemo → OpenRouter `:free` |
 | OCR "Tesseract" | **OCR.space** (25K req/mo gratuit) en primaire + **Tesseract** en fallback local |
@@ -34,7 +34,7 @@ Le plan reprend `docs/FlowMind_AI.md` et `docs/FlowMind_AI_Rapport_Strategique.m
 ### 3.2 — Document `FlowMind_AI.md` : sections à réécrire
 - Section 5 (Technologies) → tableau à jour avec versions 2026.
 - Section 6 (Architecture) → nouvelle architecture complète.
-- Section 7 (Déploiement) → Docker Compose + Fly.io + Vercel.
+- Section 7 (Déploiement) → Docker Compose + Railway.app + Vercel.
 - Section 10 (Plan) → 5 semaines.
 - **Ajout** : section "Design System", section "Fonctionnalités Premium".
 
@@ -85,7 +85,7 @@ Le plan reprend `docs/FlowMind_AI.md` et `docs/FlowMind_AI_Rapport_Strategique.m
 │              DÉPLOIEMENT                                 │
 │  Local: Docker Compose                                   │
 │  Frontend prod: Vercel (free tier)                       │
-│  Backend prod: Fly.io (free tier, pas de veille)         │
+│  Backend prod: Railway.app (crédit initial)                 │
 │  CI/CD: GitHub Actions                                   │
 │  Monorepo: Turborepo + pnpm                              │
 └──────────────────────────────────────────────────────────┘
@@ -223,7 +223,7 @@ warning:          #F39C12    (attention)
 - CI/CD GitHub Actions
 - Documentation (README, ARCHITECTURE.md)
 - Tests (pytest, Vitest)
-- Déploiement production (Vercel + Fly.io)
+- Déploiement production (Vercel + Railway.app)
 - Vidéo démo
 
 ## 9. Budget : $0/mois
@@ -231,7 +231,7 @@ warning:          #F39C12    (attention)
 | Service | Tier | Carte requise ? |
 |---|---|---|
 | Vercel (frontend) | Free (250 builds/mo) | Non |
-| Fly.io (backend) | Free (3 shared VMs) | Non |
+| Railway.app (backend) | Crédit initial ~$5 (sans carte au premier déploiement) | Au-delà du crédit : carte requise → Vérifier le free tier à l'inscription |
 | Gemini API | Free (10 RPM, 250 req/day) | Non |
 | Groq | Free (30 RPM, 1K req/day) | Non |
 | Mistral | Free rate-limited | Non |

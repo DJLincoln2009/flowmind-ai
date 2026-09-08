@@ -14,6 +14,7 @@ class WorkflowUpdate(BaseModel):
     description: str | None = None
     definition: dict | None = None
     is_active: bool | None = None
+    cron: str | None = None
 
 
 class WorkflowOut(BaseModel):
@@ -23,6 +24,8 @@ class WorkflowOut(BaseModel):
     description: str | None = None
     definition: dict
     is_active: bool
+    cron: str | None = None
+    next_run_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 

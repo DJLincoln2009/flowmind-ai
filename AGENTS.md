@@ -15,7 +15,7 @@
 - `apps/api` : FastAPI (async), SQLModel + SQLAlchemy 2.0 async, **SQLite via aiosqlite en local** (swap vers PostgreSQL = changement d'URL `DATABASE_URL` uniquement), Alembic dès le jour 1, gestion de paquets **uv**, lint/format **Ruff**, tests **pytest + httpx**.
 - Moteur de workflows : DAG natif FastAPI (tri topologique de Kahn + niveaux parallèles), statut par nœud, streaming **SSE** vers le canvas. Pas de Celery/Redis au MVP.
 - IA : chaîne de fallback structurée (Gemini 2.5 Flash → Groq Llama 3.3/Whisper → Mistral Nemo), clients tous compatibles OpenAI, module d'abstraction avec un seul point de bascule.
-- Déploiement : Vercel (frontend) + Fly.io (backend, free tier sans mise en veille), Docker Compose en local.
+- Déploiement : Vercel (frontend) + Railway.app (backend, crédit initial sans carte bancaire), Docker Compose en local.
 
 ## Conventions Git
 - `main` toujours stable/déployable ; intégration sur `develop` ; branches `feature/<name>` fusionnées via PR auto-revue ; tags `v0.x` à chaque jalon.

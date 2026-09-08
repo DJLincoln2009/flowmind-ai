@@ -56,6 +56,8 @@ export const WorkflowSchema = z.object({
   description: z.string().nullable().optional(),
   definition: WorkflowDefinitionSchema.default({ nodes: [], edges: [] }),
   is_active: z.boolean().default(true),
+  cron: z.string().nullable().optional(),
+  next_run_at: z.string().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -69,6 +71,19 @@ export const WorkflowCreateSchema = WorkflowSchema.omit({
 });
 
 export type WorkflowCreate = z.input<typeof WorkflowCreateSchema>;
+
+// ---- Templates de workflows ----
+
+export const WorkflowTemplateSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  category: z.string(),
+  icon: z.string(),
+  definition: WorkflowDefinitionSchema,
+});
+
+export type WorkflowTemplate = z.infer<typeof WorkflowTemplateSchema>;
 
 // ---- Exécutions ----
 

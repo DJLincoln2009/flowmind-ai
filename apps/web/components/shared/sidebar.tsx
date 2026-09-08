@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   History,
   LayoutDashboard,
+  LayoutTemplate,
   Workflow,
   Settings as SettingsIcon,
   PanelLeftClose,
@@ -24,6 +25,11 @@ const NAV_ITEMS = [
     label: "Workflows",
     href: "/workflows",
     icon: Workflow,
+  },
+  {
+    label: "Modèles",
+    href: "/templates",
+    icon: LayoutTemplate,
   },
   {
     label: "Historique",

@@ -76,13 +76,13 @@
 
 | # | Tâche | Statut | Date | Branche | Commit | Notes |
 |---|-------|--------|------|---------|--------|-------|
-| 5.1 | Templates de workflows (5–6) | ⏳ | | | | |
-| 5.2 | Scheduled workflows (cron) | ⏳ | | | | |
-| 5.3 | Docker Compose final | ⏳ | | | | |
-| 5.4 | CI/CD GitHub Actions | ⏳ | | | | |
-| 5.5 | Documentation (README, ARCHITECTURE.md) | ⏳ | | | | |
-| 5.6 | Tests (pytest backend, Vitest frontend) | ⏳ | | | | |
-| 5.7 | Déploiement production (Vercel + Fly.io) | ⏳ | | | | |
+| 5.1 | Templates de workflows (5–6) | ✅ | 2026-09-08 | `feature/semaine5` | `dcbcf06` `013321c` | 6 templates (`services/templates.py`) exposés en public via GET `/api/templates` ; page `/templates` + instanciation 1-clic → éditeur (3 nœuds) |
+| 5.2 | Scheduled workflows (cron) | ✅ | 2026-09-08 | `feature/semaine5` | `dcbcf06` `013321c` | Crontab 5 champs via `croniter`, scheduler asyncio (tick 15 s, lock), PATCH validation (400 « Expression cron invalide »), `next_run_at` recalculé ; dialog Planification (exemples, switch actif, prochaine run). Fix : comparaisons en UTC naïf (SQLite ne stocke pas le tz) ; vérifié en live : exécution cron auto <80 s, `next_run_at` avancé |
+| 5.3 | Docker Compose final | ✅ | 2026-09-08 | `feature/semaine5` | `8d5de4c` | healthchecks (python urllib API / wget web), `FLOWMIND_CORS_ORIGINS`, `NEXT_PUBLIC_API_URL`, `depends_on: service_healthy` ; `docker compose config` validé |
+| 5.4 | CI/CD GitHub Actions | ✅ | 2026-09-08 | `feature/semaine5` | `8d5de4c` | `ci.yml` (uv : ruff + pytest ; pnpm : tsc shared/web, eslint, vitest, build) ; `deploy.yml` : deploy hooks Vercel + Railway.app (curl POST sur push `main`, garde `secrets != ''`) |
+| 5.5 | Documentation (README, ARCHITECTURE.md) | ✅ | 2026-09-08 | `feature/semaine5` | `a01ba9e` | `docs/ARCHITECTURE.md` créé ; README complété (budget $0, qualité/CI + tests, déploiement) ; Fly.io → Railway.app partout (PLAN.md, AGENTS.md, Rapport Stratégique) |
+| 5.6 | Tests (pytest backend, Vitest frontend) | ✅ | 2026-09-08 | `feature/semaine5` | `dcbcf06` `013321c` | pytest 7/7 (templates publics, validation cron) ; Vitest 5/5 (`format.test.ts` après extraction `lib/format.ts`) ; eslint + tsc web & shared clean ; `next build` OK ; E2E UI Playwright : Modèles (6) + dialog Planification (cron invalide rejeté, valide → prochaine exécution) |
+| 5.7 | Déploiement production (Vercel + Railway.app) | ✅* | 2026-09-08 | `feature/semaine5` | `8d5de4c` | Automatisation prête (workflow deploy + hook endpoints, `railway.toml` healthcheck `/health`). *Déclenchement réel manuel : poser les secrets GitHub (`VERCEL_DEPLOY_HOOK`, `RAILWAY_DEPLOY_HOOK`) puis push sur `main` |
 | 5.8 | Vidéo démo | ⏳ | | | | |
 
 ---
@@ -109,3 +109,6 @@
 | 2026-09-07 | Correction des noms de modèles IA | Les modèles prévus (Gemini 2.5-flash, groq llama-3.3, openrouter gemini-2.5:free) sont indisponibles/non gratuits pour les nouveaux comptes → diagnostic live et remplacement : Gemini `gemini-3.6-flash`, OpenRouter `nvidia/nemotron-3-ultra-550b-a55b:free`, Groq `qwen/qwen3.6-27b`, Mistral `mistral-small-latest` (4e fallback, rate limit 429) |
 | 2026-09-07 | SSE authorisé via token en query param | EventSource ne peut pas envoyer de header Authorization → double support Bearer + `?token=` sur `/api/executions/{id}/stream` (compromis assumé, local-first) |
 | 2026-09-07 | `playwright` ajouté en dependency dev de l'API | Les E2E UI Playwright sont exécutés via le venv uv ; `uv sync` l'avait retiré car hors `pyproject.toml` |
+| 2026-09-08 | **Fly.io → Railway.app** (décision utilisateur) | Déploiement backend sur Railway.app : crédit initial ~$5 **sans carte au premier déploiement** (carte requise après épuisement du crédit — caveat documenté dans PLAN.md/README/ARCHITECTURE)
+| 2026-09-08 | `croniter` + `uv.lock` commité | Ajout croniter>=3 (résolu → 6.2.4) ; manifestations : la règle `uv.lock` du `.gitignore` retirée car CI `uv sync --frozen` exige le lock
+| 2026-09-08 | Scheduler cron en UTC naïf | SQLite ne stocke pas le timezone → `TypeError` offset-aware/naive sur le tick ; corrigé par `utcnow_naive()` (compare et génère des datetimes sans tzinfo) |

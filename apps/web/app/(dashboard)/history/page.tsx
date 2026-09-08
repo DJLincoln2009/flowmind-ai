@@ -11,6 +11,7 @@ import {
 import type { ExecutionHistoryItem } from "@flowmind/shared";
 import { History as HistoryIcon } from "lucide-react";
 import { api } from "@/lib/api-client";
+import { formatDuration } from "@/lib/format";
 import { EmptyState } from "@/components/shared/empty-state";
 import { TableRowSkeleton } from "@/components/shared/skeleton";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -24,12 +25,6 @@ const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   hour: "2-digit",
   minute: "2-digit",
 });
-
-function formatDuration(ms: number | null | undefined): string {
-  if (ms == null) return "—";
-  if (ms < 1000) return `${ms} ms`;
-  return `${(ms / 1000).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} s`;
-}
 
 const columns = columnHelper.columns([
   columnHelper.accessor("workflow_name", {

@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -10,12 +11,18 @@ from app.routes.executions import router as executions_router
 from app.routes.executions import sse_router
 from app.routes.history import router as history_router
 from app.routes.stats import router as stats_router
+from app.routes.templates import router as templates_router
+from app.services.scheduler import scheduler_loop
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
-    yield
+    scheduler_task = asyncio.create_task(scheduler_loop())
+    try:
+        yield
+    finally:
+        scheduler_task.cancel()
 
 
 app = FastAPI(
@@ -40,6 +47,7 @@ app.include_router(executions_router, prefix=API_PREFIX)
 app.include_router(sse_router, prefix=API_PREFIX)
 app.include_router(history_router, prefix=API_PREFIX)
 app.include_router(stats_router, prefix=API_PREFIX)
+app.include_router(templates_router, prefix=API_PREFIX)
 
 
 @app.get("/health", tags=["health"])

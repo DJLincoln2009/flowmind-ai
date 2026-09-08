@@ -115,3 +115,50 @@ async def test_dashboard_stats_and_history(client: AsyncClient) -> None:
         "/api/executions", headers={"Authorization": f"Bearer {other['access_token']}"}
     )
     assert r.json() == []
+
+
+@pytest.mark.asyncio
+async def test_templates_public(client: AsyncClient) -> None:
+    r = await client.get("/api/templates")
+    assert r.status_code == 200
+    templates = r.json()
+    assert len(templates) >= 5
+    for t in templates:
+        assert t["id"] and t["name"] and t["icon"]
+        definition = t["definition"]
+        assert definition["nodes"] and definition["edges"]
+        # Chaque arête référence des nœuds existants (graphe valide)
+        ids = {n["id"] for n in definition["nodes"]}
+        for edge in definition["edges"]:
+            assert edge["source"] in ids
+            assert edge["target"] in ids
+
+
+@pytest.mark.asyncio
+async def test_workflow_schedule_cron(client: AsyncClient) -> None:
+    tokens = await register(client)
+    headers = {"Authorization": f"Bearer {tokens['access_token']}"}
+
+    r = await client.post(
+        "/api/workflows",
+        headers=headers,
+        json={"name": "Planifié", "definition": {"nodes": [], "edges": []}},
+    )
+    wf_id = r.json()["id"]
+
+    # cron invalide -> 400
+    r = await client.patch(f"/api/workflows/{wf_id}", headers=headers, json={"cron": "not-a-cron"})
+    assert r.status_code == 400
+
+    # cron valide -> next_run_at peuplé
+    r = await client.patch(f"/api/workflows/{wf_id}", headers=headers, json={"cron": "0 9 * * *"})
+    assert r.status_code == 200
+    wf = r.json()
+    assert wf["cron"] == "0 9 * * *"
+    assert wf["next_run_at"] is not None
+
+    # retrait du cron -> next_run_at à None
+    r = await client.patch(f"/api/workflows/{wf_id}", headers=headers, json={"cron": None})
+    assert r.status_code == 200
+    assert r.json()["cron"] is None
+    assert r.json()["next_run_at"] is None

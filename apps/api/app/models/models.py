@@ -32,6 +32,9 @@ class Workflow(SQLModel, table=True):
     # Graphe serialisé : nodes + edges (compatible @xyflow/react)
     definition: dict = Field(default_factory=dict, sa_column=Column(JSON))
     is_active: bool = Field(default=True)
+    # Planification : expression cron (5 champs) + prochaine exécution calculée
+    cron: str | None = Field(default=None, sa_column=Column(String))
+    next_run_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
     created_at: datetime = Field(default_factory=utcnow, sa_column=Column(DateTime(timezone=True)))
     updated_at: datetime = Field(
         default_factory=utcnow,
