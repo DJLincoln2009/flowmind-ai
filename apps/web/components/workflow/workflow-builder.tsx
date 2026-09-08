@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Check, Cloud, Play, Save, Workflow } from "lucide-react";
 import { WorkflowCanvas } from "./workflow-canvas";
 import { NodePalette } from "./node-palette";
+import { ScheduleDialog } from "./schedule-dialog";
 import {
   useAutosave,
   useWorkflowPersistence,
@@ -87,6 +88,7 @@ export function WorkflowBuilder({ workflowId }: { workflowId: number }) {
             Ctrl K
           </kbd>
         </button>
+        <ScheduleDialog workflowId={workflowId} />
         {running ? (
           <button
             type="button"

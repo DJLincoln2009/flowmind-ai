@@ -4,6 +4,7 @@ import type {
   ExecutionHistoryItem,
   Workflow,
   WorkflowCreate,
+  WorkflowTemplate,
 } from "@flowmind/shared";
 
 export const API_URL =
@@ -155,6 +156,12 @@ class ApiClient {
 
   getStats(): Promise<DashboardStats> {
     return this.request<DashboardStats>("/stats");
+  }
+
+  // ---- Templates ----
+
+  listTemplates(): Promise<WorkflowTemplate[]> {
+    return this.request<WorkflowTemplate[]>("/templates");
   }
 
   /**
