@@ -19,6 +19,7 @@ dependencies = [
     "pyjwt>=2.10",
     "pwdlib[argon2]>=0.2",
     "sse-starlette>=2.1",
+    "croniter>=3",
 ]
 
 [dependency-groups]
