@@ -1,0 +1,6 @@
+# Configuration Railway.app pour la publication de l'API FlowMind.
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

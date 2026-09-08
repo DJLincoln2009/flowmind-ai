@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API — ruff + pytest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install deps
+        run: uv sync --frozen --dev
+      - name: Ruff
+        run: uv run ruff check app
+      - name: Pytest
+        run: uv run python -m pytest -q
+
+  web:
+    name: Web — lint + types + tests + build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck shared
+        run: pnpm --filter @flowmind/shared exec tsc --noEmit
+      - name: Lint web
+        run: pnpm --filter web lint
+      - name: Typecheck web
+        run: pnpm --filter web exec tsc --noEmit
+      - name: Tests web (Vitest)
+        run: pnpm --filter web test
+      - name: Build web
+        run: pnpm --filter web build
