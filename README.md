@@ -32,9 +32,18 @@ docker compose up --build     # API :8000 + Web :3000
 
 ## Qualité
 
-- Web : `pnpm --filter web build` (Next + typecheck)
-- API : `uv run pytest -q` · `uv run ruff check app tests`
+- Web : `pnpm --filter web lint` · `pnpm --filter web exec tsc --noEmit` · `pnpm --filter web test` (Vitest) · `pnpm --filter web build`
+- API : `uv run ruff check app tests` · `uv run python -m pytest -q`
+- CI : `.github/workflows/ci.yml` (lint + types + tests + build sur chaque push)
+
+## Déploiement
+
+- Frontend → **Vercel** (free tier)
+- Backend → **Railway.app** (crédit initial ~$5, sans carte au premier déploiement — voir `docs/PLAN.md`)
+- Déploiements automatiques via **deploy hooks** (`.github/workflows/deploy.yml`) : secrets GitHub `VERCEL_DEPLOY_HOOK` et `RAILWAY_DEPLOY_HOOK`
+- En local : `docker compose up --build`
+- Détails d'architecture : `docs/ARCHITECTURE.md`
 
 ## Budget
 
-$0/mois — free tiers uniquement (Gemini, Groq, Mistral, OCR.space, Vercel, Fly.io). Voir `docs/PLAN.md`.
+$0/mois — free tiers uniquement (Gemini, Groq, Mistral, OCR.space, Vercel, Railway.app). Voir `docs/PLAN.md`.

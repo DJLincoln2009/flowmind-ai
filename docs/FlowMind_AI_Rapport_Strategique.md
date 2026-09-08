@@ -363,10 +363,9 @@ Le tableau ci-dessous détaille l'ensemble des choix technologiques retenus pour
 | Vercel | Hébergement frontend | CI/CD intégré, CDN global | Free tier (projets | Netlify, |
 |   |   |   | perso) | Cloudflare |
 |   |   |   |   | Pages |
-| Render | Hébergement backend / | Déploiement Docker simple, | Free tier (avec mise | Railway, Fly.io |
+| Render | Hébergement backend / | Déploiement Docker simple, | Free tier (avec mise | Railway.app |
 |   | workers | logs intégrés | en veille) |   |
-| Railway | Hébergement backend | Interface simple, bon pour | Crédit gratuit | Render |
-|   | alternatif | prototypage rapide | mensuel limité |   |
+| Railway.app | Hébergement backend | Interface simple, bon pour | Crédit initial ~\$5 | Render |
 | Supabase | PostgreSQL managé + auth | Interface d'administration, | Free tier généreux | Neon |
 |   | optionnelle | backups automatiques |   | (Postgres |
 |   |   |   |   | serverless) |
