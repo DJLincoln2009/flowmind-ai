@@ -107,7 +107,7 @@
 | 6.1 | Tests backend premium (13 pytest) | ✅ | 2026-09-12 | `feature/semaine6` | `003917b` | ruff clean ; `test_workflow_versions`, `test_templates_marketplace`, filtre dossiers/tags/recherche ; 13 passed |
 | 6.2 | Checks frontend + build | ✅ | 2026-09-12 | `feature/semaine6` | `1efbead` `6aaed7e` | eslint 0 erreur, tsc web & shared clean, Vitest 7/7 (dont undo/redo store), `next build` OK |
 | 6.3 | E2E Playwright premium | ✅ | 2026-09-12 | `feature/semaine6` | `6aaed7e` | 11/11 : PWA, templates, instanciation, agentic, drop+undo+redo, versions, propriétés dossier/tag + filtres, recherche + reset, i18n EN/FR, publication + dépublier, cohérence API |
-| 6.4 | Merge semaine 6 | ✅ | 2026-09-12 | `feature/semaine6` → `develop` | — | Merge no-ff (PR auto-revue) |
+| 6.4 | Merge semaine 6 | ✅ | 2026-09-12 | `feature/semaine6` → `develop` | `987ca06` | Merge no-ff (PR auto-revue) |
 
 ---
 
