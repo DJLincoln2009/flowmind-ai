@@ -7,4 +7,3 @@ flowmind.db
 *.db
 .env
 tests
-uv.lock
