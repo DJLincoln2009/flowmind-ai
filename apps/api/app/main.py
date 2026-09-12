@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import init_db
 from app.routes import auth, workflows
+from app.routes.agentic import router as agentic_router
 from app.routes.executions import router as executions_router
 from app.routes.executions import sse_router
 from app.routes.history import router as history_router
@@ -48,6 +49,7 @@ app.include_router(sse_router, prefix=API_PREFIX)
 app.include_router(history_router, prefix=API_PREFIX)
 app.include_router(stats_router, prefix=API_PREFIX)
 app.include_router(templates_router, prefix=API_PREFIX)
+app.include_router(agentic_router, prefix=API_PREFIX)
 
 
 @app.get("/health", tags=["health"])
