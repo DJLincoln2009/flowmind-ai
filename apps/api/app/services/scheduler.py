@@ -33,6 +33,18 @@ def utcnow_naive() -> datetime:
     return datetime.now(UTC).replace(tzinfo=None)
 
 
+def ensure_utc(dt: datetime) -> datetime:
+    """Normalise une datetime en UTC aware.
+
+    SQLite retourne des datetimes naïves (tzinfo=None) ; PostgreSQL (timestamptz)
+    retourne des datetimes aware. On attache UTC aux naïves pour comparer de façon
+    identique sur les deux dialectes.
+    """
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
+
 def next_run(cron: str, base: datetime | None = None) -> datetime:
     """Retourne la prochaine exécution (UTC naive) pour une expression cron."""
     return croniter(cron, base or utcnow_naive()).get_next(datetime)
@@ -58,7 +70,7 @@ async def scheduler_loop() -> None:
 
 
 async def _tick() -> None:
-    now = utcnow_naive()
+    now = ensure_utc(utcnow_naive())
     due_ids: list[int] = []
 
     async with SessionLocal() as session:
@@ -73,7 +85,7 @@ async def _tick() -> None:
             if wf.next_run_at is None:
                 wf.next_run_at = next_run(wf.cron or "")
                 session.add(wf)
-            elif wf.next_run_at <= now:
+            elif ensure_utc(wf.next_run_at) <= now:
                 due_ids.append(wf.id)
         await session.commit()
 

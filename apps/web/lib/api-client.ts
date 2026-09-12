@@ -1,10 +1,13 @@
 import type {
+  AgenticPlan,
   AuthTokens,
   DashboardStats,
   ExecutionHistoryItem,
+  TemplateCreate,
   Workflow,
   WorkflowCreate,
   WorkflowTemplate,
+  WorkflowVersion,
 } from "@flowmind/shared";
 
 export const API_URL =
@@ -112,8 +115,21 @@ class ApiClient {
 
   // ---- Workflows ----
 
-  listWorkflows(): Promise<Workflow[]> {
-    return this.request<Workflow[]>("/workflows");
+  listWorkflows(filters?: {
+    search?: string;
+    folder?: string;
+    tag?: string[];
+  }): Promise<Workflow[]> {
+    const params = new URLSearchParams();
+    if (filters?.search) params.set("search", filters.search);
+    if (filters?.folder) params.set("folder", filters.folder);
+    for (const t of filters?.tag ?? []) params.append("tag", t);
+    const qs = params.toString();
+    return this.request<Workflow[]>(`/workflows${qs ? `?${qs}` : ""}`);
+  }
+
+  listFolders(): Promise<string[]> {
+    return this.request<string[]>("/workflows/folders");
   }
 
   getWorkflow(id: number): Promise<Workflow> {
@@ -127,6 +143,14 @@ class ApiClient {
     });
   }
 
+  /** Agentic execution : un objectif → un plan de workflow généré par IA (sans persistance). */
+  generateAgenticPlan(objective: string): Promise<AgenticPlan> {
+    return this.request<AgenticPlan>("/agentic/plan", {
+      method: "POST",
+      body: JSON.stringify({ objective }),
+    });
+  }
+
   updateWorkflow(id: number, payload: Partial<WorkflowCreate>): Promise<Workflow> {
     return this.request<Workflow>(`/workflows/${id}`, {
       method: "PATCH",
@@ -136,6 +160,25 @@ class ApiClient {
 
   deleteWorkflow(id: number): Promise<void> {
     return this.request<void>(`/workflows/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Versions (snapshots) ----
+
+  listVersions(workflowId: number): Promise<WorkflowVersion[]> {
+    return this.request<WorkflowVersion[]>(`/workflows/${workflowId}/versions`);
+  }
+
+  saveVersion(workflowId: number, label?: string): Promise<WorkflowVersion> {
+    return this.request<WorkflowVersion>(`/workflows/${workflowId}/versions/save`, {
+      method: "POST",
+      body: JSON.stringify({ label: label ?? null }),
+    });
+  }
+
+  restoreVersion(workflowId: number, versionId: number): Promise<Workflow> {
+    return this.request<Workflow>(`/workflows/${workflowId}/versions/${versionId}/restore`, {
+      method: "POST",
+    });
   }
 
   // ---- Exécutions ----
@@ -158,10 +201,21 @@ class ApiClient {
     return this.request<DashboardStats>("/stats");
   }
 
-  // ---- Templates ----
+  // ---- Templates (marketplace) ----
 
   listTemplates(): Promise<WorkflowTemplate[]> {
     return this.request<WorkflowTemplate[]>("/templates");
+  }
+
+  publishTemplate(payload: TemplateCreate): Promise<WorkflowTemplate> {
+    return this.request<WorkflowTemplate>("/templates", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  deleteTemplate(id: string): Promise<void> {
+    return this.request<void>(`/templates/${id}`, { method: "DELETE" });
   }
 
   /**

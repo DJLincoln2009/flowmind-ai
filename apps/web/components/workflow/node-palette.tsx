@@ -1,11 +1,24 @@
 "use client";
 
+"use client";
+
 import type { DragEvent } from "react";
 import { NODE_META, PALETTE_ORDER, type FlowNode } from "@/lib/nodes";
+import { useI18n } from "@/lib/i18n";
+
+const CATEGORY_KEY: Record<string, string> = {
+  déclencheur: "cat.trigger",
+  IA: "cat.ai",
+  données: "cat.data",
+  logique: "cat.logic",
+};
 
 function PaletteItem({ type }: { type: FlowNode["type"] }) {
+  const { t } = useI18n();
   const meta = NODE_META[type];
   const Icon = meta.icon;
+  const label = t(`node.${type}`);
+  const category = t(CATEGORY_KEY[meta.category] ?? meta.category);
 
   const onDragStart = (event: DragEvent<HTMLButtonElement>) => {
     event.dataTransfer.setData("application/flowmind", `flowmind:node:${type}`);
@@ -29,20 +42,19 @@ function PaletteItem({ type }: { type: FlowNode["type"] }) {
         <Icon size={14} strokeWidth={2} />
       </div>
       <div className="min-w-0">
-        <p className="truncate text-[13px] font-medium text-text-primary">
-          {meta.label}
-        </p>
-        <p className="truncate text-[11px] text-text-secondary">{meta.category}</p>
+        <p className="truncate text-[13px] font-medium text-text-primary">{label}</p>
+        <p className="truncate text-[11px] text-text-secondary">{category}</p>
       </div>
     </button>
   );
 }
 
 export function NodePalette() {
+  const { t } = useI18n();
   return (
-    <div className="flex h-full flex-col gap-2 p-3" role="listbox" aria-label="Palette de nœuds">
+    <div className="flex h-full flex-col gap-2 p-3" role="listbox" aria-label={t("builder.palette")}>
       <p className="px-1 text-[11px] font-semibold uppercase tracking-wider text-text-secondary">
-        Nœuds disponibles
+        {t("builder.palette")}
       </p>
       <div className="grid grid-cols-1 gap-2">
         {PALETTE_ORDER.map((type) => (

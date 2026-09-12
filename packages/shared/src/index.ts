@@ -58,6 +58,8 @@ export const WorkflowSchema = z.object({
   is_active: z.boolean().default(true),
   cron: z.string().nullable().optional(),
   next_run_at: z.string().nullable().optional(),
+  folder: z.string().nullable().optional(),
+  tags: z.array(z.string()).default([]),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -72,6 +74,34 @@ export const WorkflowCreateSchema = WorkflowSchema.omit({
 
 export type WorkflowCreate = z.input<typeof WorkflowCreateSchema>;
 
+// ---- Versions (snapshots) ----
+
+export const WorkflowVersionSchema = z.object({
+  id: z.number(),
+  workflow_id: z.number(),
+  label: z.string().nullable().optional(),
+  definition: WorkflowDefinitionSchema,
+  created_at: z.string(),
+});
+
+export type WorkflowVersion = z.infer<typeof WorkflowVersionSchema>;
+
+// ---- Agentic execution ----
+
+export const AgenticCreateSchema = z.object({
+  objective: z.string().min(10).max(2000),
+});
+
+export type AgenticCreate = z.infer<typeof AgenticCreateSchema>;
+
+export const AgenticPlanSchema = z.object({
+  name: z.string().min(1).max(120),
+  description: z.string().default(""),
+  definition: WorkflowDefinitionSchema,
+});
+
+export type AgenticPlan = z.infer<typeof AgenticPlanSchema>;
+
 // ---- Templates de workflows ----
 
 export const WorkflowTemplateSchema = z.object({
@@ -81,9 +111,20 @@ export const WorkflowTemplateSchema = z.object({
   category: z.string(),
   icon: z.string(),
   definition: WorkflowDefinitionSchema,
+  source: z.enum(["builtin", "user"]).default("builtin"),
 });
 
 export type WorkflowTemplate = z.infer<typeof WorkflowTemplateSchema>;
+
+export const TemplateCreateSchema = WorkflowTemplateSchema.pick({
+  name: true,
+  description: true,
+  category: true,
+  icon: true,
+  definition: true,
+});
+
+export type TemplateCreate = z.input<typeof TemplateCreateSchema>;
 
 // ---- Exécutions ----
 
