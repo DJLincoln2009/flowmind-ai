@@ -91,11 +91,23 @@
 
 | # | Tâche | Statut | Date | Branche | Commit | Notes |
 |---|-------|--------|------|---------|--------|-------|
-| P.1 | Agentic execution (objectif → plan → exécution) | ⏳ | | | | |
-| P.2 | Workspace intelligent (dossiers, tags, recherche) | ⏳ | | | | |
-| P.3 | Version history (undo/redo canvas) | ⏳ | | | | |
-| P.4 | Multi-language (FR/EN) | ⏳ | | | | |
-| P.6 | Templates marketplace | ⏳ | | | | |
+| P.1 | Agentic execution (objectif → plan → exécution) | ✅ | 2026-09-12 | `feature/semaine6` | `003917b` `1efbead` | `routes/agentic.py` + `services/agentic.py` (objectif → plan agentique en 4 étapes asynchrones, téléversement du plan sur le graphe, SSE + store `agentic.js`) ; `agentic-dialog.tsx` traduit FR/EN |
+| P.2 | Workspace intelligent (dossiers, tags, recherche) | ✅ | 2026-09-12 | `feature/semaine6` | `003917b` `1efbead` | `folder`/`tags` sur Workflow (validated, ≤10, lowercase), filtres `?search=&folder=&tag=`, `GET /workflows/folders`, requête tags SQLite via `cast(...) LIKE` ; UI : page workflows (recherche différée, chips dossiers/tags, reset), sidebar dossiers `/workflows?folder=`, dialog Propriétés |
+| P.3 | Version history (undo/redo canvas) | ✅ | 2026-09-12 | `feature/semaine6` | `003917b` `1efbead` | `WorkflowVersion` + POST save / GET list / POST restore ; store zustand undo/redo (past/future, cap 50). Fix : `onNodesChange` `dimensions` (cosmétique) ne committe plus l'historique + déduplication → undo réel (testé : drop→undo→redo) ; raccourcis Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y |
+| P.4 | Multi-language (FR/EN) | ✅ | 2026-09-12 | `feature/semaine6` | `1efbead` | `lib/i18n` : dictionnaire FR/EN à clés plates + provider `useI18n` (storage `flowmind_lang`) ; sidebar (nav + dossiers + toggle FR/EN), builder, palette, dashboard, history, workflows, templates, dialogs (planification, agentic, propriétés) |
+| P.5 | PWA (installable, offline-capable) | ✅ | 2026-09-12 | `feature/semaine6` | `6aaed7e` | `app/manifest.ts` (Web Manifest Next) + `public/sw.js` (network-first navigations, cache assets, pas de `/api`) + inscription prod-only ; icônes 192/512/maskable générées ; E2E : `/sw.js` + `/manifest.webmanifest` → 200 |
+| P.6 | Templates marketplace | ✅ | 2026-09-12 | `feature/semaine6` | `003917b` `1efbead` | `routes/templates.py` : GET = built-in (`b*`) + utilisateurs (`u{id}`, `source`), POST publish, DELETE owner-only (403 built-in) ; UI : onglets Galerie/Mes créations, bouton « Publier » dans le builder, dépublier |
+
+---
+
+## Semaine 6 — Fonctionnalités premium (P.1–P.6)
+
+| # | Tâche | Statut | Date | Branche | Commit | Notes |
+|---|-------|--------|------|---------|--------|-------|
+| 6.1 | Tests backend premium (13 pytest) | ✅ | 2026-09-12 | `feature/semaine6` | `003917b` | ruff clean ; `test_workflow_versions`, `test_templates_marketplace`, filtre dossiers/tags/recherche ; 13 passed |
+| 6.2 | Checks frontend + build | ✅ | 2026-09-12 | `feature/semaine6` | `1efbead` `6aaed7e` | eslint 0 erreur, tsc web & shared clean, Vitest 7/7 (dont undo/redo store), `next build` OK |
+| 6.3 | E2E Playwright premium | ✅ | 2026-09-12 | `feature/semaine6` | `6aaed7e` | 11/11 : PWA, templates, instanciation, agentic, drop+undo+redo, versions, propriétés dossier/tag + filtres, recherche + reset, i18n EN/FR, publication + dépublier, cohérence API |
+| 6.4 | Merge semaine 6 | ✅ | 2026-09-12 | `feature/semaine6` → `develop` | — | Merge no-ff (PR auto-revue) |
 
 ---
 
@@ -112,3 +124,4 @@
 | 2026-09-08 | **Fly.io → Railway.app** (décision utilisateur) | Déploiement backend sur Railway.app : crédit initial ~$5 **sans carte au premier déploiement** (carte requise après épuisement du crédit — caveat documenté dans PLAN.md/README/ARCHITECTURE)
 | 2026-09-08 | `croniter` + `uv.lock` commité | Ajout croniter>=3 (résolu → 6.2.4) ; manifestations : la règle `uv.lock` du `.gitignore` retirée car CI `uv sync --frozen` exige le lock
 | 2026-09-08 | Scheduler cron en UTC naïf | SQLite ne stocke pas le timezone → `TypeError` offset-aware/naive sur le tick ; corrigé par `utcnow_naive()` (compare et génère des datetimes sans tzinfo) |
+| 2026-09-12 | Undo/redo : les changements `dimensions` de React Flow committaient l'historique | Après un drop, RF mesure les nœuds → `onNodesChange(dimensions)` empilait des snapshots identiques par-dessus le snapshot pré-action → Ctrl+Z ne changeait rien ; corrigé en filtrant les changements cosmétiques + déduplication des snapshots consécutifs |
