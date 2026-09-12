@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -15,6 +16,7 @@ import { formatDuration } from "@/lib/format";
 import { EmptyState } from "@/components/shared/empty-state";
 import { TableRowSkeleton } from "@/components/shared/skeleton";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { useI18n } from "@/lib/i18n";
 
 type Features = typeof stockFeatures;
 const columnHelper = createColumnHelper<Features, ExecutionHistoryItem>();
@@ -26,45 +28,50 @@ const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   minute: "2-digit",
 });
 
-const columns = columnHelper.columns([
-  columnHelper.accessor("workflow_name", {
-    header: "Workflow",
-    cell: (info) => (
-      <Link
-        href={`/workflows/${info.row.original.workflow_id}`}
-        className="text-[13px] font-medium text-text-primary hover:underline"
-      >
-        {info.getValue()}
-      </Link>
-    ),
-  }),
-  columnHelper.accessor("status", {
-    header: "Statut",
-    cell: (info) => <StatusBadge status={info.getValue()} />,
-  }),
-  columnHelper.accessor("created_at", {
-    header: "Début",
-    cell: (info) => (
-      <span className="text-[12.5px] text-text-secondary">
-        {dateFormatter.format(new Date(info.getValue()))}
-      </span>
-    ),
-  }),
-  columnHelper.accessor("duration_ms", {
-    header: "Durée",
-    cell: (info) => (
-      <span className="font-mono text-[12px] text-text-secondary">
-        {formatDuration(info.getValue())}
-      </span>
-    ),
-  }),
-]);
-
 export default function HistoryPage() {
+  const { t } = useI18n();
   const { data: executions, isLoading, isError, error } = useQuery({
     queryKey: ["executions", "history"],
     queryFn: () => api.listAllExecutions(),
   });
+
+  const columns = useMemo(
+    () =>
+      columnHelper.columns([
+        columnHelper.accessor("workflow_name", {
+          header: t("hist.workflow"),
+          cell: (info) => (
+            <Link
+              href={`/workflows/${info.row.original.workflow_id}`}
+              className="text-[13px] font-medium text-text-primary hover:underline"
+            >
+              {info.getValue()}
+            </Link>
+          ),
+        }),
+        columnHelper.accessor("status", {
+          header: t("hist.status"),
+          cell: (info) => <StatusBadge status={info.getValue()} />,
+        }),
+        columnHelper.accessor("created_at", {
+          header: t("hist.date"),
+          cell: (info) => (
+            <span className="text-[12.5px] text-text-secondary">
+              {dateFormatter.format(new Date(info.getValue()))}
+            </span>
+          ),
+        }),
+        columnHelper.accessor("duration_ms", {
+          header: t("hist.duration"),
+          cell: (info) => (
+            <span className="font-mono text-[12px] text-text-secondary">
+              {formatDuration(info.getValue())}
+            </span>
+          ),
+        }),
+      ]),
+    [t]
+  );
 
   const table = useTable({
     features: stockFeatures,
@@ -76,10 +83,10 @@ export default function HistoryPage() {
     <div className="flex h-full flex-col overflow-y-auto p-6">
       <header className="mb-5">
         <h1 className="text-lg font-semibold tracking-tight text-text-primary">
-          Historique
+          {t("hist.title")}
         </h1>
         <p className="text-[13px] text-text-secondary">
-          Toutes vos exécutions, de la plus récente à la plus ancienne.
+          {t("hist.subtitle")}
         </p>
       </header>
 
@@ -87,7 +94,7 @@ export default function HistoryPage() {
         <p className="mb-4 rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-[13px] text-error">
           {error instanceof Error
             ? error.message
-            : "Impossible de charger l'historique"}
+            : t("common.error")}
         </p>
       )}
 
@@ -100,8 +107,8 @@ export default function HistoryPage() {
       ) : (executions?.length ?? 0) === 0 ? (
         <EmptyState
           icon={HistoryIcon}
-          title="Aucune exécution"
-          description="Vos exécutions de workflows apparaîtront ici avec leur statut, leur durée et leur date."
+          title={t("hist.empty")}
+          description={t("hist.subtitle")}
         />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border bg-surface-raised">

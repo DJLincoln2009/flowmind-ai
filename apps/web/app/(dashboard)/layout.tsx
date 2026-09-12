@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { Sidebar } from "@/components/shared/sidebar";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
+import { I18nProvider } from "@/lib/i18n";
 import { api } from "@/lib/api-client";
 import { useUiStore } from "@/stores/ui-store";
 
@@ -36,8 +37,11 @@ export default function DashboardLayout({
 
   return (
     <QueryClientProvider client={queryClient}>
+    <I18nProvider>
       <div className="flex h-screen w-full overflow-hidden">
-        <Sidebar />
+        <Suspense fallback={null}>
+          <Sidebar />
+        </Suspense>
         <div className="relative flex flex-1 flex-col overflow-hidden">
           <main className="min-h-0 flex-1 overflow-hidden">
             <ErrorBoundary>{children}</ErrorBoundary>
@@ -46,6 +50,7 @@ export default function DashboardLayout({
         <CommandPalette />
       </div>
       <Toaster position="bottom-right" richColors closeButton />
+    </I18nProvider>
     </QueryClientProvider>
   );
 }

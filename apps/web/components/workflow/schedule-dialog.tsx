@@ -4,13 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CalendarClock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api-client";
-
-const CRON_EXAMPLES = [
-  { label: "Tous les jours à 9 h 00", value: "0 9 * * *" },
-  { label: "Toutes les 30 minutes", value: "*/30 * * * *" },
-  { label: "Lundi à vendredi à 8 h 30", value: "30 8 * * 1-5" },
-  { label: "Chaque heure", value: "0 * * * *" },
-];
+import { useI18n } from "@/lib/i18n";
 
 function Switch({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -35,6 +29,7 @@ function Switch({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 }
 
 export function ScheduleDialog({ workflowId }: { workflowId: number }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [cron, setCron] = useState("");
   const [isActive, setIsActive] = useState(true);
@@ -51,11 +46,11 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
       setIsActive(wf.is_active ?? true);
       setNextRunAt(wf.next_run_at ?? null);
     } catch {
-      toast.error("Impossible de charger la planification");
+      toast.error(t("common.error"));
     } finally {
       setLoading(false);
     }
-  }, [workflowId]);
+  }, [workflowId, t]);
 
   const close = () => setOpen(false);
 
@@ -68,11 +63,9 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
       });
       const wf = await api.getWorkflow(workflowId);
       setNextRunAt(wf.next_run_at ?? null);
-      toast.success(
-        wf.cron ? `Planifié : ${wf.cron}` : "Planification retirée"
-      );
+      toast.success(wf.cron ? `${t("status.scheduled")} : ${wf.cron}` : t("sched.disable"));
     } catch {
-      toast.error("Expression cron invalide (minute heure jour mois semaine)");
+      toast.error(t("sched.cron.invalid"));
     } finally {
       setSaving(false);
     }
@@ -91,11 +84,11 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
       <button
         type="button"
         onClick={() => void openDialog()}
-        title="Planification (cron)"
+        title={t("sched.title")}
         className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-base px-3 py-1.5 text-[12.5px] font-medium text-text-secondary transition-colors hover:border-accent/50 hover:text-text-primary"
       >
         <CalendarClock size={14} />
-        Planifier
+        {t("builder.schedule")}
       </button>
 
       {open && (
@@ -113,10 +106,10 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
           <div className="relative w-full max-w-md overflow-hidden rounded-xl border border-border bg-surface-overlay shadow-2xl">
             <div className="border-b border-border px-5 py-4">
               <p className="text-[14.5px] font-semibold text-text-primary">
-                Planification
+                {t("sched.title")}
               </p>
               <p className="text-[12px] text-text-secondary">
-                Exécutez ce workflow automatiquement, sans ouvrir l’éditeur.
+                {t("sched.desc")}
               </p>
             </div>
 
@@ -126,7 +119,7 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
                   htmlFor="cron-input"
                   className="mb-1.5 block text-[12px] font-medium text-text-secondary"
                 >
-                  Expression cron (5 champs)
+                  {t("sched.cron")} (5 champs)
                 </label>
                 <input
                   id="cron-input"
@@ -145,17 +138,22 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
               <div className="flex items-center justify-between rounded-lg border border-border bg-surface-base px-3 py-2.5">
                 <div>
                   <p className="text-[13px] font-medium text-text-primary">
-                    Planification active
+                    {isActive ? t("status.scheduled") : t("status.pending")}
                   </p>
                   <p className="text-[11.5px] text-text-secondary">
-                    Le workflow s’exécutera selon le cron ci-dessus.
+                    {t("sched.desc")}
                   </p>
                 </div>
                 <Switch checked={isActive} onChange={setIsActive} />
               </div>
 
               <div className="flex flex-wrap gap-1.5">
-                {CRON_EXAMPLES.map((ex) => (
+                {[
+                  { label: t("sched.daily"), value: "0 9 * * *" },
+                  { label: t("sched.hourly"), value: "0 * * * *" },
+                  { label: "Lundi–Vendredi 8h30", value: "30 8 * * 1-5" },
+                  { label: "*/30 · toutes les 30 min", value: "*/30 * * * *" },
+                ].map((ex) => (
                   <button
                     key={ex.value}
                     type="button"
@@ -170,7 +168,7 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
               {nextRunAt && (
                 <p className="flex items-center gap-1.5 text-[12px] text-text-secondary">
                   <CalendarClock size={12} className="text-accent-hover" />
-                  Prochaine exécution :{" "}
+                  {t("sched.cron.valid")}{" "}
                   <span className="font-medium text-text-primary">
                     {new Date(nextRunAt).toLocaleString("fr-FR", {
                       dateStyle: "short",
@@ -187,7 +185,7 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
                 onClick={close}
                 className="rounded-lg border border-border bg-surface-base px-3 py-1.5 text-[12.5px] font-medium text-text-secondary transition-colors hover:text-text-primary"
               >
-                Fermer
+                {t("agentic.close")}
               </button>
               <button
                 type="button"
@@ -196,7 +194,7 @@ export function ScheduleDialog({ workflowId }: { workflowId: number }) {
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-3 py-1.5 text-[12.5px] font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-50"
               >
                 {saving && <Loader2 size={13} className="animate-spin" />}
-                Enregistrer
+                {t("props.save")}
               </button>
             </div>
           </div>
