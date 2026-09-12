@@ -32,6 +32,9 @@ class Workflow(SQLModel, table=True):
     # Graphe serialisé : nodes + edges (compatible @xyflow/react)
     definition: dict = Field(default_factory=dict, sa_column=Column(JSON))
     is_active: bool = Field(default=True)
+    # Workspace intelligent : dossier + tags
+    folder: str | None = Field(default=None, sa_column=Column(String))
+    tags: list = Field(default_factory=list, sa_column=Column(JSON))
     # Planification : expression cron (5 champs) + prochaine exécution calculée
     cron: str | None = Field(default=None, sa_column=Column(String))
     next_run_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
@@ -43,6 +46,7 @@ class Workflow(SQLModel, table=True):
 
     owner: Optional["User"] = Relationship(back_populates="workflows")
     executions: list["Execution"] = Relationship(back_populates="workflow")
+    versions: list["WorkflowVersion"] = Relationship(back_populates="workflow")
 
 
 class Execution(SQLModel, table=True):
@@ -57,3 +61,34 @@ class Execution(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utcnow, sa_column=Column(DateTime(timezone=True)))
 
     workflow: Optional["Workflow"] = Relationship(back_populates="executions")
+
+
+class WorkflowVersion(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    workflow_id: int = Field(
+        sa_column=Column(ForeignKey("workflow.id", ondelete="CASCADE"), index=True, nullable=False)
+    )
+    label: str | None = Field(default=None, sa_column=Column(String))
+    definition: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    created_at: datetime = Field(default_factory=utcnow, sa_column=Column(DateTime(timezone=True)))
+
+    workflow: Optional["Workflow"] = Relationship(back_populates="versions")
+
+
+class Template(SQLModel, table=True):
+    """Templates marketplace : instantiable (owner_id NULL = officiel) ou publié par un utilisateur."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    owner_id: int | None = Field(
+        default=None,
+        sa_column=Column(ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True),
+    )
+    template_key: str = Field(sa_column=Column(String, nullable=False))  # slug unique d'instanciation
+    name: str = Field(sa_column=Column(String, nullable=False))
+    description: str = Field(default="", sa_column=Column(Text))
+    category: str = Field(default="personnalisé", sa_column=Column(String))
+    icon: str = Field(default="LayoutTemplate", sa_column=Column(String))
+    definition: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    created_at: datetime = Field(default_factory=utcnow, sa_column=Column(DateTime(timezone=True)))
+
+    owner: Optional["User"] = Relationship()

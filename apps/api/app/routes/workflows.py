@@ -1,24 +1,61 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import String, cast, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.database import get_session
 from app.core.deps import get_current_user
-from app.models.models import User, Workflow
-from app.schemas.workflow import WorkflowCreate, WorkflowOut, WorkflowUpdate
+from app.models.models import User, Workflow, WorkflowVersion, utcnow
+from app.schemas.workflow import (
+    VersionSaveIn,
+    WorkflowCreate,
+    WorkflowOut,
+    WorkflowUpdate,
+    WorkflowVersionOut,
+)
 from app.services.scheduler import is_valid_cron, next_run
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
 
+@router.get("/folders", response_model=list[str])
+async def list_folders(
+    session: AsyncSession = Depends(get_session),
+    user: User = Depends(get_current_user),
+) -> list[str]:
+    """Retourne la liste des dossiers utilisés par l'utilisateur (tri alphabétique)."""
+    result = await session.execute(
+        select(Workflow.folder)
+        .where(Workflow.owner_id == user.id, Workflow.folder.is_not(None))
+        .distinct()
+    )
+    folders = sorted(f for (f,) in result.all() if f)
+    return folders
+
+
 @router.get("", response_model=list[WorkflowOut])
 async def list_workflows(
+    search: str | None = Query(default=None, max_length=120),
+    folder: str | None = Query(default=None, max_length=80),
+    tag: list[str] | None = Query(default=None),
     session: AsyncSession = Depends(get_session),
     user: User = Depends(get_current_user),
 ) -> list[Workflow]:
-    result = await session.execute(
-        select(Workflow).where(Workflow.owner_id == user.id).order_by(Workflow.updated_at.desc())
-    )
+    stmt = select(Workflow).where(Workflow.owner_id == user.id)
+
+    if search:
+        like = f"%{search.lower()}%"
+        stmt = stmt.where(
+            (Workflow.name.like(like))
+            | (Workflow.description.like(like))
+            | (Workflow.folder.like(like))
+            | (cast(Workflow.tags, String).like(like))
+        )
+    if folder:
+        stmt = stmt.where(Workflow.folder == folder)
+    for t in tag or []:
+        stmt = stmt.where(cast(Workflow.tags, String).like(f"%{t.lower()}%"))
+
+    result = await session.execute(stmt.order_by(Workflow.updated_at.desc()))
     return list(result.scalars().all())
 
 
@@ -28,8 +65,72 @@ async def create_workflow(
     session: AsyncSession = Depends(get_session),
     user: User = Depends(get_current_user),
 ) -> Workflow:
-    workflow = Workflow(owner_id=user.id, **payload.model_dump())
+    data = payload.model_dump()
+    if data.get("tags") is None:
+        data["tags"] = []
+    workflow = Workflow(owner_id=user.id, **data)
     session.add(workflow)
+    await session.commit()
+    await session.refresh(workflow)
+    return workflow
+
+
+@router.get("/{workflow_id}/versions", response_model=list[WorkflowVersionOut])
+async def list_versions(
+    workflow_id: int,
+    session: AsyncSession = Depends(get_session),
+    user: User = Depends(get_current_user),
+) -> list[WorkflowVersion]:
+    workflow = await _get_owned(workflow_id, user.id, session)
+    result = await session.execute(
+        select(WorkflowVersion)
+        .where(WorkflowVersion.workflow_id == workflow.id)
+        .order_by(WorkflowVersion.created_at.desc())
+    )
+    return list(result.scalars().all())
+
+
+@router.post(
+    "/{workflow_id}/versions/save",
+    response_model=WorkflowVersionOut,
+    status_code=status.HTTP_201_CREATED,
+)
+async def save_version(
+    workflow_id: int,
+    payload: VersionSaveIn,
+    session: AsyncSession = Depends(get_session),
+    user: User = Depends(get_current_user),
+) -> WorkflowVersion:
+    workflow = await _get_owned(workflow_id, user.id, session)
+    version = WorkflowVersion(
+        workflow_id=workflow.id,
+        label=payload.label or None,
+        definition=workflow.definition or {},
+    )
+    session.add(version)
+    await session.commit()
+    await session.refresh(version)
+    return version
+
+
+@router.post("/{workflow_id}/versions/{version_id}/restore", response_model=WorkflowOut)
+async def restore_version(
+    workflow_id: int,
+    version_id: int,
+    session: AsyncSession = Depends(get_session),
+    user: User = Depends(get_current_user),
+) -> Workflow:
+    workflow = await _get_owned(workflow_id, user.id, session)
+    result = await session.execute(
+        select(WorkflowVersion).where(
+            WorkflowVersion.id == version_id, WorkflowVersion.workflow_id == workflow.id
+        )
+    )
+    version = result.scalar_one_or_none()
+    if version is None:
+        raise HTTPException(status_code=404, detail="Version introuvable")
+    workflow.definition = version.definition
+    workflow.updated_at = utcnow()
     await session.commit()
     await session.refresh(workflow)
     return workflow
@@ -66,6 +167,10 @@ async def update_workflow(
         else:
             data["cron"] = cron.strip()
             data["next_run_at"] = next_run(cron.strip())
+
+    # Workspace : pas de null sur tags (colonne non-null)
+    if "tags" in data and data["tags"] is None:
+        data["tags"] = []
 
     for key, value in data.items():
         setattr(workflow, key, value)

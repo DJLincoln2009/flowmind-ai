@@ -15,8 +15,10 @@ import { api } from "@/lib/api-client";
 import { EmptyState } from "@/components/shared/empty-state";
 import { KpiCardSkeleton } from "@/components/shared/skeleton";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { useI18n } from "@/lib/i18n";
 
 export default function DashboardPage() {
+  const { t } = useI18n();
   const { data: stats, isLoading, isError, error } = useQuery({
     queryKey: ["stats"],
     queryFn: () => api.getStats(),
@@ -25,33 +27,34 @@ export default function DashboardPage() {
     refetchIntervalInBackground: true,
   });
 
+  const total = stats?.workflows_total ?? 0;
   const kpis = [
     {
-      label: "Workflows actifs",
+      labelKey: "dash.kpi.active",
       value: stats?.workflows_active ?? "–",
-      detail: `${stats?.workflows_total ?? 0} au total`,
+      detail: `${total} ${t("wf.title").toLowerCase()}`,
       icon: Workflow,
       tone: "bg-accent/12 text-accent-hover",
     },
     {
-      label: "Exécutions",
+      labelKey: "dash.kpi.executions",
       value: stats?.executions_total ?? "–",
-      detail: `${stats?.executions_success ?? 0} réussies`,
+      detail: `${stats?.executions_success ?? 0} ${t("status.success").toLowerCase()}`,
       icon: Play,
       tone: "bg-info/12 text-info",
     },
     {
-      label: "Taux de succès",
+      labelKey: "dash.kpi.success",
       value:
         stats ? `${Math.round(stats.execution_success_rate * 100)} %` : "–",
-      detail: "sur l'ensemble des exécutions",
+      detail: t("wf.runs"),
       icon: CheckCircle2,
       tone: "bg-success/15 text-success",
     },
     {
-      label: "Durée moyenne",
+      labelKey: "hist.duration",
       value: stats?.avg_duration_ms != null ? `${Math.round(stats.avg_duration_ms / 1000 / 60 * 10) / 10} s` : "–",
-      detail: "par workflow",
+      detail: t("wf.runs"),
       icon: Timer,
       tone: "bg-warning/15 text-warning",
     },
@@ -61,10 +64,10 @@ export default function DashboardPage() {
     <div className="flex h-full flex-col overflow-y-auto p-6">
       <header className="mb-6 animate-appear">
         <h1 className="text-lg font-semibold tracking-tight text-text-primary">
-          Tableau de bord
+          {t("dash.title")}
         </h1>
         <p className="text-[13px] text-text-secondary">
-          Vue d&apos;ensemble de vos automatisations.
+          {t("dash.subtitle")}
         </p>
       </header>
 
@@ -72,7 +75,7 @@ export default function DashboardPage() {
         <p className="mb-4 rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-[13px] text-error">
           {error instanceof Error
             ? error.message
-            : "Impossible de charger les statistiques"}
+            : t("common.error")}
         </p>
       )}
 
@@ -84,7 +87,7 @@ export default function DashboardPage() {
               const Icon = kpi.icon;
               return (
                 <div
-                  key={kpi.label}
+                  key={kpi.labelKey}
                   className="rounded-xl border border-border bg-surface-raised p-4"
                 >
                   <div className="flex items-center gap-2.5">
@@ -94,7 +97,7 @@ export default function DashboardPage() {
                       <Icon size={15} strokeWidth={2} />
                     </div>
                     <p className="text-[12.5px] font-medium text-text-secondary">
-                      {kpi.label}
+                      {t(kpi.labelKey)}
                     </p>
                   </div>
                   <p className="mt-3 font-mono text-2xl font-medium tracking-tight text-text-primary">
@@ -113,7 +116,7 @@ export default function DashboardPage() {
         <div className="mb-3 flex items-center gap-2">
           <Activity size={15} className="text-text-secondary" />
           <h2 className="text-[13.5px] font-semibold text-text-primary">
-            Activité récente
+            {t("dash.recent")}
           </h2>
           <span className="ml-auto flex items-center gap-1.5 text-[11px] text-text-muted">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
@@ -130,15 +133,15 @@ export default function DashboardPage() {
         ) : (stats?.recent_executions.length ?? 0) === 0 ? (
           <EmptyState
             icon={Activity}
-            title="Aucune exécution pour l'instant"
-            description="Lancez un workflow pour voir son activité apparaître ici, en temps réel."
+            title={t("dash.recent.empty")}
+            description={t("wf.empty.desc")}
           >
             <Link
               href="/workflows/new"
               className="inline-flex items-center gap-2 rounded-lg bg-accent px-3.5 py-2 text-[13px] font-medium text-white transition-colors hover:bg-accent-hover"
             >
               <Plus size={15} />
-              Créer un workflow
+              {t("dash.create")}
             </Link>
           </EmptyState>
         ) : (
