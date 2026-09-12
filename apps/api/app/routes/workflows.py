@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import String, cast, select
+from sqlalchemy.dialects import postgresql
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.core.database import get_session
+from app.core.database import engine, get_session
 from app.core.deps import get_current_user
 from app.models.models import User, Workflow, WorkflowVersion, utcnow
 from app.schemas.workflow import (
@@ -15,6 +16,17 @@ from app.schemas.workflow import (
 from app.services.scheduler import is_valid_cron, next_run
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
+
+
+def _tags_as_text(column) -> object:
+    """Rendu texte de la colonne JSON `tags`.
+
+    SQLite : CAST(... AS VARCHAR) → texte JSON de la colonne.
+    PostgreSQL : CAST(... AS TEXT) fonctionne sur jsonb (CAST AS VARCHAR est refusé).
+    """
+    if engine.dialect.name == "postgresql":
+        return cast(column, postgresql.TEXT)
+    return cast(column, String)
 
 
 @router.get("/folders", response_model=list[str])
@@ -48,12 +60,12 @@ async def list_workflows(
             (Workflow.name.like(like))
             | (Workflow.description.like(like))
             | (Workflow.folder.like(like))
-            | (cast(Workflow.tags, String).like(like))
+            | (_tags_as_text(Workflow.tags).like(like))
         )
     if folder:
         stmt = stmt.where(Workflow.folder == folder)
     for t in tag or []:
-        stmt = stmt.where(cast(Workflow.tags, String).like(f"%{t.lower()}%"))
+        stmt = stmt.where(_tags_as_text(Workflow.tags).like(f"%{t.lower()}%"))
 
     result = await session.execute(stmt.order_by(Workflow.updated_at.desc()))
     return list(result.scalars().all())
