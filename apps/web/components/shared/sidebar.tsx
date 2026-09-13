@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Folder,
   History,
   Languages,
   LayoutDashboard,
   LayoutTemplate,
+  LogOut,
   Workflow,
-  Settings as SettingsIcon,
   PanelLeftClose,
   PanelLeftOpen,
   Sparkles,
@@ -40,11 +40,6 @@ const NAV_ITEMS = [
     labelKey: "nav.history",
     href: "/history",
     icon: History,
-  },
-  {
-    labelKey: "nav.settings",
-    href: "/settings",
-    icon: SettingsIcon,
   },
 ];
 
@@ -131,6 +126,7 @@ function FoldersList({ collapsed }: { collapsed: boolean }) {
 
 export function Sidebar() {
   const { t, lang, setLang } = useI18n();
+  const router = useRouter();
   const collapsed = useUiStore((s) => s.sidebarCollapsed);
   const toggleSidebar = useUiStore((s) => s.toggleSidebar);
 
@@ -169,6 +165,20 @@ export function Sidebar() {
       {/* Footer */}
       <div className={["flex flex-col gap-1.5 px-2.5 pb-3", collapsed && "px-2"].join(" ")}>
         <ThemeToggle collapsed={collapsed} />
+        <button
+          onClick={() => {
+            api.logout();
+            router.push("/auth/login");
+          }}
+          title={collapsed ? t("auth.logout") : undefined}
+          className={[
+            "flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface-raised py-2 text-text-secondary transition-colors hover:border-error/30 hover:text-error",
+            collapsed ? "justify-center" : "justify-center",
+          ].join(" ")}
+        >
+          <LogOut size={14} />
+          {!collapsed && <span className="text-[12px]">{t("auth.logout")}</span>}
+        </button>
         {!collapsed && (
           <div className="flex items-center justify-between rounded-lg border border-border bg-surface-raised px-2.5 py-1.5">
             <span className="flex items-center gap-1.5 text-[11px] text-text-secondary">

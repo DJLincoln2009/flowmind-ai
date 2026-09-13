@@ -82,6 +82,11 @@ class ApiClient {
     });
     if (!res.ok) {
       this.clearTokens();
+      if (typeof window !== "undefined") {
+        // Module hors composant React : pas de useRouter disponible.
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+        window.location.href = `${window.location.origin}/auth/login`;
+      }
       return false;
     }
     const tokens = (await res.json()) as AuthTokens;

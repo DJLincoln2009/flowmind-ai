@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Toaster } from "sonner";
 import { Sidebar } from "@/components/shared/sidebar";
 import { CommandPalette } from "@/components/shared/command-palette";
@@ -27,13 +28,18 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [queryClient] = useState(() => new QueryClient());
-
-  useEffect(() => {
-    api.loadTokens();
-  }, []);
+  const [authed] = useState(() => Boolean(api.loadTokens()));
 
   useResponsiveSidebar();
+
+  useEffect(() => {
+    if (!authed) router.replace("/auth/login");
+  }, [authed, router]);
+
+  // Pas de session : on ne monte pas les pages (sinon les requêtes partent sans token → 401).
+  if (!authed) return null;
 
   return (
     <QueryClientProvider client={queryClient}>
